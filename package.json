@@ -33,7 +33,8 @@
     "bin",
     "lib",
     "prompts",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "engines": {
     "node": ">=16.0.0"
