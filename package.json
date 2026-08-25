@@ -1,0 +1,44 @@
+{
+  "name": "shiplens-cli",
+  "version": "1.2.7",
+  "description": "Shiplens CLI (In Development) - 15-second zero-config analytics initialization and full telemetry analysis engine",
+  "main": "lib/index.js",
+  "bin": {
+    "shiplens-cli": "bin/shiplens.js",
+    "shiplens": "bin/shiplens.js"
+  },
+  "keywords": [
+    "shiplens",
+    "analytics",
+    "cli",
+    "telemetry",
+    "heatmap",
+    "dashboard",
+    "growth",
+    "agent",
+    "mcp",
+    "prompts"
+  ],
+  "author": "Shiplens Team",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hyperlong/shiplens-cli.git"
+  },
+  "homepage": "https://shiplens.dev",
+  "scripts": {
+    "test": "node test/cli.test.js"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "prompts",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
