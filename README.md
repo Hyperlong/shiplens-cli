@@ -2,7 +2,7 @@
 
 > **Fast User Telemetry, Instant SDK Instrumentation & AI Analytics Engine for Modern Web Apps.**
 
-[![npm version](https://img.shields.io/npm/v/shiplens-cli.svg)](https://www.npmjs.com/package/shiplens-cli)
+[![npm version](https://img.shields.io/npm/v/@shiplens/cli.svg)](https://www.npmjs.com/package/@shiplens/cli)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Node Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen.svg)](package.json)
 [![Status](https://img.shields.io/badge/status-active%20development-orange.svg)]()
@@ -20,7 +20,7 @@ Run in the root of any Next.js, Vite, Vue, or HTML project:
 
 ```bash
 # Zero-install execution via npx
-npx --yes shiplens-cli init --json
+npx --yes @shiplens/cli init --json
 ```
 
 ### What `init` Does Automatically:
@@ -50,17 +50,17 @@ Shiplens introduces an adaptive learning loop for AI Agents:
 
 | Command | Description |
 | :--- | :--- |
-| `npx shiplens-cli init --json` | 15-second zero-config analytics onboarding |
-| `npx shiplens-cli doctor --json` | End-to-end diagnostics on SDK, network, and credentials |
-| `npx shiplens-cli summary --range 7d --json` | Traffic overview: PV, UV, bounce rates, geos, devices |
-| `npx shiplens-cli query --metric pageviews --json` | Multi-dimensional metrics & funnel queries |
-| `npx shiplens-cli sql --query "<sql>" --json` | Sandboxed read-only ClickHouse SQL execution |
-| `npx shiplens-cli pages --range 7d --json` | Page-level visits and average dwell times |
-| `npx shiplens-cli paths --range 7d --json` | User journeys and Sankey transition paths |
-| `npx shiplens-cli heatmap --template <id> --json` | Click heatmaps & skeleton wireframe snapshots |
-| `npx shiplens-cli dashboards create --prompt "..." --json` | AI-driven dashboard generation |
-| `npx shiplens-cli auth bind --email <email> --json` | Request Magic Link for quota activation & authorization |
-| `npx shiplens-cli auth configure --client cursor --json` | Auto-configure MCP servers in IDEs |
+| `npx @shiplens/cli init --json` | 15-second zero-config analytics onboarding |
+| `npx @shiplens/cli doctor --json` | End-to-end diagnostics on SDK, network, and credentials |
+| `npx @shiplens/cli summary --range 7d --json` | Traffic overview: PV, UV, bounce rates, geos, devices |
+| `npx @shiplens/cli query --metric pageviews --json` | Multi-dimensional metrics & funnel queries |
+| `npx @shiplens/cli sql --query "<sql>" --json` | Sandboxed read-only ClickHouse SQL execution |
+| `npx @shiplens/cli pages --range 7d --json` | Page-level visits and average dwell times |
+| `npx @shiplens/cli paths --range 7d --json` | User journeys and Sankey transition paths |
+| `npx @shiplens/cli heatmap --template <id> --json` | Click heatmaps & skeleton wireframe snapshots |
+| `npx @shiplens/cli dashboards create --prompt "..." --json` | AI-driven dashboard generation |
+| `npx @shiplens/cli auth bind --email <email> --json` | Request Magic Link for quota activation & authorization |
+| `npx @shiplens/cli auth configure --client cursor --json` | Auto-configure MCP servers in IDEs |
 
 ---
 
