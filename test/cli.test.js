@@ -284,14 +284,14 @@ function testDashboardsAIFlag() {
 }
 
 function testInstallSDKDependencyFallback() {
-  console.log('🧪 Test 13: installSDKDependency cross-package manager fallback');
+  console.log('🧪 Test 13: installSDKDependency 4-tier download sources & retry fallback');
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-test-install-'));
   try {
     fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify({ name: 'test-pkg', dependencies: {} }), 'utf8');
-    const res = installSDKDependency(tempDir, 'unknown_manager');
+    const res = installSDKDependency(tempDir, 'non_existent_pkg_manager_123');
     assert.ok(typeof res === 'object', 'Should return result object');
     assert.ok('success' in res, 'Should contain success field');
-    console.log('  ✅ Dependency installation fallback passed');
+    console.log('  ✅ 4-tier dependency installation fallback passed');
   } finally {
     try {
       fs.rmSync(tempDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });

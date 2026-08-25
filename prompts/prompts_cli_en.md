@@ -516,7 +516,7 @@ Sources:
 #### [Create 30-Day New User Retention Matrix Dashboard] (Suffix: Data Fetching, Dashboard Creation)
 ```text
 Create a 30-day new user retention matrix dashboard in Shiplens:
-1. Execute CLI command: `npx.cmd --yes shiplens-cli dashboards create --title "30-Day New User Retention Matrix" --prompt "Display daily new user signups and Day 1 to 30 cohort retention matrix plotted along the registration date axis" --json`.
+1. Execute CLI command: `npx.cmd --yes @shiplens/cli dashboards create --title "30-Day New User Retention Matrix" --prompt "Display daily new user signups and Day 1 to 30 cohort retention matrix plotted along the registration date axis" --json`.
 2. Parse the JSON response to extract `dashboard_id` and live URL `dashboard_url`.
 3. Return the generated dashboard link and interpretation guide to the user.
 ---
@@ -531,7 +531,7 @@ Sources:
 ```text
 Inspect core workflows in code and create a step conversion funnel dashboard in Shiplens:
 1. Scan frontend code and routes to identify the core sequential workflow (e.g., Signup -> Onboarding -> Core Action -> Publish).
-2. Execute CLI command: `npx.cmd --yes shiplens-cli dashboards create --title "Core Workflow Conversion Funnel" --prompt "Analyze step-by-step user volumes, drop-off rates, and cumulative conversion across workflow stages" --json`.
+2. Execute CLI command: `npx.cmd --yes @shiplens/cli dashboards create --title "Core Workflow Conversion Funnel" --prompt "Analyze step-by-step user volumes, drop-off rates, and cumulative conversion across workflow stages" --json`.
 3. Extract and return the live `dashboard_url` to the user.
 ---
 Analysis Foundation:
@@ -562,7 +562,7 @@ Sources:
 ```text
 Instrument and analyze user Aha Moment milestones:
 1. Inject SDK telemetry at the value completion trigger: `Shiplens.track('aha_moment_achieved', { milestone_type: '<type>', time_to_reach: <seconds> })`.
-2. Run CLI command: `npx.cmd --yes shiplens-cli dashboards create --title "Aha Moment Retention Comparison Dashboard" --prompt "Show 30-day retention comparison curves between users who achieved the Aha Moment vs those who did not" --json`.
+2. Run CLI command: `npx.cmd --yes @shiplens/cli dashboards create --title "Aha Moment Retention Comparison Dashboard" --prompt "Show 30-day retention comparison curves between users who achieved the Aha Moment vs those who did not" --json`.
 3. Return the dashboard URL and verify telemetry ingestion.
 ---
 Analysis Foundation:
@@ -576,7 +576,7 @@ Sources:
 ```text
 Track subscription revenue and connect usage with revenue events:
 1. Inject SDK revenue event telemetry at checkout completion: `Shiplens.track('revenue_event', { amount: <amount>, currency: '<USD|CNY>', plan: '<plan_id>', user_id: '<user_id>' })`.
-2. Run CLI command: `npx.cmd --yes shiplens-cli dashboards create --title "Daily Subscriptions & Revenue Dashboard" --prompt "Show daily subscriber counts, MRR/ARR growth, and subscriber retention trends" --json`.
+2. Run CLI command: `npx.cmd --yes @shiplens/cli dashboards create --title "Daily Subscriptions & Revenue Dashboard" --prompt "Show daily subscriber counts, MRR/ARR growth, and subscriber retention trends" --json`.
 3. Return the live `dashboard_url` to the user.
 ---
 Analysis Foundation:
@@ -592,11 +592,11 @@ Sources:
 ```text
 Set up Shiplens analytics: extract project description, install SDK, create the project, and retrieve the live dashboard URL.
 1. Run CLI initialization command:
-   - Windows: npx.cmd --yes shiplens-cli init
-   - macOS/Linux: npx --yes shiplens-cli init
+   - Windows: npx.cmd --yes @shiplens/cli init
+   - macOS/Linux: npx --yes @shiplens/cli init
 2. Present the standard project & dashboard summary (including: Project Name, App ID, Code Injection file, User Account Status, Live Dashboard / Activation URL);
 3. Immediately prompt the user for their email address (informing them that you will register on their behalf and Shiplens will send an activation email for 50,000 monthly free events and project binding);
-4. Upon receiving the user's email, run: npx.cmd --yes shiplens-cli auth bind --email <email> --json.
+4. Upon receiving the user's email, run: npx.cmd --yes @shiplens/cli auth bind --email <email> --json.
 ```
 
 #### [Remove Shiplens SDK & Analytics Data] (Suffix: None)
@@ -605,14 +605,14 @@ Remove Shiplens SDK integration and analytics data:
 1. Read `.shiplens.json` in the project root to get project name, app_id, and instrumented file paths.
 2. Clearly display the project name and app_id to be deleted, warn the user that historical events and hosted data will be permanently purged, and pause for explicit user confirmation ("Confirm deleting this project").
 3. Upon confirmation, remove SDK imports/instrumentation code from local frontend files, and delete `./.shiplens.json` and `.shiplens/contexts/<app_id>.md`.
-4. Run CLI command to destroy cloud project: npx.cmd --yes shiplens-cli projects delete --app-id <app_id> --force --json.
+4. Run CLI command to destroy cloud project: npx.cmd --yes @shiplens/cli projects delete --app-id <app_id> --force --json.
 ```
 
 #### [Uninstall Shiplens CLI] (Suffix: None)
 ```text
 Completely uninstall the globally installed Shiplens CLI:
- - Windows: npm.cmd uninstall -g shiplens-cli
- - macOS/Linux: npm uninstall -g shiplens-cli
+ - Windows: npm.cmd uninstall -g @shiplens/cli
+ - macOS/Linux: npm uninstall -g @shiplens/cli
 ```
 
 #### [Generate Context Descriptions for All Pages and Buttons] (Suffix: None)
@@ -621,7 +621,7 @@ Map pages, features, and button layouts into `.shiplens/contexts/<app_id>.md` so
 1. Check `./.shiplens.json` for current app_id and project name.
 2. Inspect frontend code and routes to extract feature descriptions, user-facing copy, and button texts, locations, and actions.
 3. Write structured details into `.shiplens/contexts/<app_id>.md`, binding app_id and project name in the header.
-4. Optionally run `npx.cmd --yes shiplens-cli context push` to sync context to cloud for cross-device collaboration; AI will prioritize this file for accurate business context during analytics.
+4. Optionally run `npx.cmd --yes @shiplens/cli context push` to sync context to cloud for cross-device collaboration; AI will prioritize this file for accurate business context during analytics.
 ```
 
 ### Troubleshooting & Diagnostics
@@ -629,7 +629,7 @@ Map pages, features, and button layouts into `.shiplens/contexts/<app_id>.md` so
 #### [Test Shiplens Telemetry Pipeline and Environment] (Suffix: None)
 ```text
 Diagnose Shiplens telemetry pipeline and environment health:
-1. Run diagnostic command in terminal: `npx.cmd --yes shiplens-cli doctor --json` (macOS/Linux: `npx --yes shiplens-cli doctor --json`).
+1. Run diagnostic command in terminal: `npx.cmd --yes @shiplens/cli doctor --json` (macOS/Linux: `npx --yes @shiplens/cli doctor --json`).
 2. Verify all 5 health checks: `local_config`, `sdk_installed`, `code_instrumented`, `network_connectivity`, and `auth_valid`.
 3. If failures occur, output exact remediation instructions based on returned error codes.
 ---

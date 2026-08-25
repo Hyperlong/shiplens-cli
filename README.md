@@ -21,13 +21,19 @@ Run in the root of any Next.js, Vite, Vue, or HTML project:
 ```bash
 # Zero-install execution via npx
 npx --yes @shiplens/cli init --json
+
+# Windows PowerShell (Avoid execution policy blocking)
+npx.cmd --yes @shiplens/cli init --json
+
+# In China or restricted networks (Alibaba Cloud / npmmirror fallback)
+npx --yes --registry=https://registry.npmmirror.com @shiplens/cli init --json
 ```
 
 ### What `init` Does Automatically:
 1. **Detects Framework**: Automatically recognizes Next.js (App / Pages router), Vite (React / Svelte), Vue 3, or plain HTML.
 2. **Injects Tracking SDK**: Inserts `@shiplens/sdk` tracking snippets into your entry files without breaking your code layout.
 3. **Connects Cloud Project**: Registers the project, generates a live responsive dashboard URL, and writes local configuration (`.shiplens.json`).
-4. **Installs Dependency**: Adds `@shiplens/sdk` via your project package manager (`npm`, `pnpm`, `yarn`, or `bun`).
+4. **Installs Dependency**: Adds `@shiplens/sdk` via your project package manager (`npm`, `pnpm`, `yarn`, or `bun`) with 4-tier download fallback (NPM -> Alibaba npmmirror -> GitHub -> CDN, 5s timeout & 2 retries per tier).
 5. **Deploys AI Skills**: Injects `.agents/skills/shiplens/SKILL.md` and Cursor rules (`.cursor/rules/shiplens.mdc`) for seamless LLM Agent integration.
 6. **Performs Git Commit**: Automatically commits all instrumentation changes atomically.
 

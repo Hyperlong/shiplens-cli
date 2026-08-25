@@ -1,6 +1,6 @@
 {
   "name": "@shiplens/cli",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "description": "Shiplens CLI (In Development) - 15-second zero-config analytics initialization and full telemetry analysis engine",
   "main": "lib/index.js",
   "bin": {
