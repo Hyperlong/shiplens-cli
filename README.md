@@ -41,14 +41,15 @@ npx --yes --registry=https://registry.npmmirror.com @shiplens/cli init --json
 
 ## 🧠 Dynamic Overrides & Adaptive Learning
 
-Shiplens introduces an adaptive learning loop for AI Agents:
+Shiplens introduces a 6-step adaptive analysis protocol for AI Agents:
 
 ```text
-[User Prompt] ➔ [Match Preset] ➔ [Apply .shiplens/learnings.md (Priority 1)] ➔ [Execute CLI] ➔ [Update Learnings]
+[User Prompt] ➔ Check learnings.md ➔ Ground in context ➔ Find scenario in prompts ➔ Execute CLI ➔ Synthesize ➔ Offer to remember
 ```
 
 - **Priority 1 (Dynamic Overrides)**: Local `.shiplens/learnings.md` rules always override default CLI parameters (e.g. customized date ranges, funnel goals, or granular filters).
-- **Priority 2 (Deterministic Base)**: Standard 42 scenario-based CLI execution presets in `prompts/cli/prompt_cli_en.md`.
+- **Priority 2 (Deterministic Base)**: Standard 42 scenario-based CLI execution presets in [`prompts/prompts_cli_en.md`](./prompts/prompts_cli_en.md) (中文: [`prompts/prompts_cli_zh.md`](./prompts/prompts_cli_zh.md)).
+- **Business Context**: `.shiplens/contexts/<app_id>.md` grounds raw telemetry IDs in real page names and button labels.
 
 ---
 
@@ -80,13 +81,10 @@ Shiplens introduces an adaptive learning loop for AI Agents:
 
 ## 📁 Documentation & Prompts
 
-- [CLI Architecture & Roadmap](./docs/01_CLI_ARCHITECTURE_AND_ROADMAP.md)
-- [Complete Command Reference](./docs/02_CLI_COMMAND_REFERENCE.md)
-- [AI Skill & Dynamic Overrides Spec](./docs/03_SKILL_SPEC_AND_PROMPTS.md)
-- [CLI Execution Prompts (42 Scenarios)](./prompts/cli/prompt_cli_en.md)
-- [Web Showcase Prompts (42 Scenarios)](./prompts/web/prompt_web_en.md)
-- [Backend API Specification](./docs/BACKEND_API_SPEC.md)
-- [Project Context Specification](./docs/SHIPLENS_CONTEXT_API_SPEC.md)
+- [Complete Command Reference & System Topology](./docs/02_CLI_COMMAND_REFERENCE.md)
+- [CLI Execution Prompts — English (42 Scenarios)](./prompts/prompts_cli_en.md)
+- [CLI Execution Prompts — 中文 (42 Scenarios)](./prompts/prompts_cli_zh.md)
+- [Prompt Architecture & Multilingual Guide](./prompts/README.md)
 
 ---
 

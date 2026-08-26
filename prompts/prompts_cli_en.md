@@ -2,6 +2,78 @@
 
 ---
 
+## Scenario Outline (42 Scenarios)
+
+> **How to use**: Scan this outline to find the matching scenario, then jump to its full section below for deterministic CLI commands and analysis steps.
+
+### Basic Analytics (3)
+1. [What Stage Is My Product In? What Metrics Should I Track?](#what-stage-is-my-product-in-what-metrics-should-i-track)
+2. [How Did the Product Perform This Week?](#how-did-the-product-perform-this-week)
+3. [Post-Release Product Iteration Analysis](#post-release-product-iteration-analysis)
+
+### Product Demand Validation (3)
+4. [Do Users Really Need My Product?](#do-users-really-need-my-product)
+5. [Do I Have a Core Group of Loyal Users? What Are Their Behaviors?](#do-i-have-a-core-group-of-loyal-users-what-are-their-behaviors)
+6. [Which Single Metric Should I Track Daily?](#which-single-metric-should-i-track-daily)
+
+### User Activation & Experience (4)
+7. [How Long Does It Take New Users to Reach Value (TTV)?](#how-long-does-it-take-new-users-to-reach-value-ttv)
+8. [Where Do New Users Drop Off in the Onboarding Funnel?](#where-do-new-users-drop-off-in-the-onboarding-funnel)
+9. [Which User Behaviors Signal Long-Term Retention (Aha Moment)?](#which-user-behaviors-signal-long-term-retention-aha-moment)
+10. [Where Do New Users Come From and What Are Their Traits?](#where-do-new-users-come-from-and-what-are-their-traits)
+
+### Acquisition Quality (1)
+11. [Are Low-Quality Channels Driving Fake Traffic? How Do Channels Compare?](#are-low-quality-channels-driving-fake-traffic-how-do-channels-compare)
+
+### A/B Testing (4)
+12. [A/B Test Experiment Results Comparison](#ab-test-experiment-results-comparison)
+13. [Are My A/B Test Results Trustworthy and Statistically Valid?](#are-my-ab-test-results-trustworthy-and-statistically-valid)
+14. [Is There an Overall Score to Track if the Product Is Improving?](#is-there-an-overall-score-to-track-if-the-product-is-improving)
+15. [How to Run an A/A Test to Validate the Experiment System?](#how-to-run-an-aa-test-to-validate-the-experiment-system)
+
+### User Retention & Churn (5)
+16. [Which Users Are Becoming Inactive and How to Catch Them Before Churn?](#which-users-are-becoming-inactive-and-how-to-catch-them-before-churn)
+17. [What Leading Indicators Predict User Churn?](#what-leading-indicators-predict-user-churn)
+18. [Are High-Paying Users Satisfied or at Risk of Canceling?](#are-high-paying-users-satisfied-or-at-risk-of-canceling)
+19. [Which Feature Usage Mix Indicates Healthy Engagement?](#which-feature-usage-mix-indicates-healthy-engagement)
+20. [Which Churn-Risk Users Should Be Prioritized for Re-Engagement?](#which-churn-risk-users-should-be-prioritized-for-re-engagement)
+
+### Monetization & Revenue (5)
+21. [Pre-Subscription User Behavior Analysis](#pre-subscription-user-behavior-analysis)
+22. [Subscriber Insights & Upsell Triggers](#subscriber-insights--upsell-triggers)
+23. [What Is the Customer Lifetime Value (LTV)?](#what-is-the-customer-lifetime-value-ltv)
+24. [Is My CAC Reasonable and What Is the Payback Period?](#is-my-cac-reasonable-and-what-is-the-payback-period)
+25. [Should I Choose Freemium or Free Trial?](#should-i-choose-freemium-or-free-trial)
+26. [When Does a Free User Become a Product Qualified Lead (PQL)?](#when-does-a-free-user-become-a-product-qualified-lead-pql)
+
+### Virality & Team Efficiency (4)
+27. [Does My Product Have Viral Growth Loops?](#does-my-product-have-viral-growth-loops)
+28. [Are We Truly Improving the Product or Shipping Outputs?](#are-we-truly-improving-the-product-or-shipping-outputs)
+29. [Are We Trapped in Building Features Nobody Wants?](#are-we-trapped-in-building-features-nobody-wants)
+30. [How to Prioritize Growth and Feature Ideas with ICE Scoring?](#how-to-prioritize-growth-and-feature-ideas-with-ice-scoring)
+
+### Dashboard Creation (2)
+31. [Create 30-Day New User Retention Matrix Dashboard](#create-30-day-new-user-retention-matrix-dashboard)
+32. [Create Sequential Step Conversion Funnel Dashboard](#create-sequential-step-conversion-funnel-dashboard)
+
+### Advanced Configuration & Tracking (3)
+33. [Configure A/B Test Event Tracking](#configure-ab-test-event-tracking)
+34. [Track and Measure User Aha Moment](#track-and-measure-user-aha-moment)
+35. [Track Subscription Revenue & Build Daily Subscription Dashboard](#track-subscription-revenue--build-daily-subscription-dashboard)
+
+### Initial Setup (4)
+36. [Shiplens CLI One-Click Setup & Analytics Initialization](#shiplens-cli-one-click-setup--analytics-initialization)
+37. [Remove Shiplens SDK & Analytics Data](#remove-shiplens-sdk--analytics-data)
+38. [Uninstall Shiplens CLI](#uninstall-shiplens-cli)
+39. [Generate Context Descriptions for All Pages and Buttons](#generate-context-descriptions-for-all-pages-and-buttons)
+
+### Troubleshooting & Diagnostics (3)
+40. [Test Shiplens Telemetry Pipeline and Environment](#test-shiplens-telemetry-pipeline-and-environment)
+41. [Enable Local Debug Mode and Verify Event Reporting](#enable-local-debug-mode-and-verify-event-reporting)
+42. [Test Event Reporting in Production Build & Release Environments](#test-event-reporting-in-production-build--release-environments)
+
+---
+
 ## 1. Scenario-Based Prompt Shortcuts Library
 
 ### Basic Analytics

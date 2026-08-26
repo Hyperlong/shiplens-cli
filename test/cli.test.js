@@ -89,7 +89,22 @@ function testFrameworkInjection() {
     assert.ok(viteContent.includes('@shiplens/sdk'));
     assert.ok(viteContent.includes('sl_app_vite123'));
 
-    // 3. Plain HTML
+    // 3. Create React App (CRA)
+    const craDir = path.join(tempDir, 'cra-app');
+    fs.mkdirSync(path.join(craDir, 'src'), { recursive: true });
+    fs.writeFileSync(path.join(craDir, 'package.json'), JSON.stringify({ name: 'my-cra-app', dependencies: { 'react-scripts': '5.0.1', react: '18.2.0' } }));
+    fs.writeFileSync(path.join(craDir, 'src/index.js'), 'import React from "react";\nimport ReactDOM from "react-dom/client";\nconst root = ReactDOM.createRoot(document.getElementById("root"));\nroot.render(<App />);\n');
+
+    const craDetect = detectProject(craDir);
+    assert.strictEqual(craDetect.framework, FRAMEWORKS.CRA);
+
+    const injectedCRA = injectSDK(craDir, FRAMEWORKS.CRA, 'sl_app_cra123');
+    assert.strictEqual(injectedCRA, 'src/index.js');
+    const craContent = fs.readFileSync(path.join(craDir, 'src/index.js'), 'utf8');
+    assert.ok(craContent.includes("require('@shiplens/sdk')"));
+    assert.ok(craContent.includes('sl_app_cra123'));
+
+    // 4. Plain HTML
     const htmlDir = path.join(tempDir, 'html-app');
     fs.mkdirSync(htmlDir, { recursive: true });
     fs.writeFileSync(path.join(htmlDir, 'index.html'), '<!DOCTYPE html><html><head><title>Test</title></head><body><h1>Hello</h1></body></html>');
@@ -283,15 +298,15 @@ function testDashboardsAIFlag() {
   console.log('  ✅ dashboards create --ai parsing passed');
 }
 
-function testInstallSDKDependencyFallback() {
-  console.log('🧪 Test 13: installSDKDependency 4-tier download sources & retry fallback');
+async function testInstallSDKDependencyFallback() {
+  console.log('🧪 Test 13: installSDKDependency 4-tier tiered racing download & fallback');
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-test-install-'));
   try {
     fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify({ name: 'test-pkg', dependencies: {} }), 'utf8');
-    const res = installSDKDependency(tempDir, 'non_existent_pkg_manager_123');
+    const res = await installSDKDependency(tempDir, 'non_existent_pkg_manager_123');
     assert.ok(typeof res === 'object', 'Should return result object');
     assert.ok('success' in res, 'Should contain success field');
-    console.log('  ✅ 4-tier dependency installation fallback passed');
+    console.log('  ✅ 4-tier tiered racing dependency installation fallback passed');
   } finally {
     try {
       fs.rmSync(tempDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
@@ -492,7 +507,7 @@ function testInitAccountStatusResolution() {
   console.log('  ✅ init User Account Status Resolution test passed');
 }
 
-function runAllTests() {
+async function runAllTests() {
   console.log('🚀 Running Shiplens CLI test suite...\n');
   testArgsParsing();
   testMaskSecret();
@@ -506,7 +521,7 @@ function runAllTests() {
   testQueryFileFlag();
   testQueryMultiMetrics();
   testDashboardsAIFlag();
-  testInstallSDKDependencyFallback();
+  await testInstallSDKDependencyFallback();
   testTaxonomyInferenceAndFormatting();
   testDetectProjectWithTaxonomy();
   testMcpClientConfiguration();
@@ -516,4 +531,7 @@ function runAllTests() {
   console.log('\n🎉 All unit tests passed (100% Passed)! (19/19)');
 }
 
-runAllTests();
+runAllTests().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

@@ -139,3 +139,57 @@ Performs health checks on:
 5. `auth_credential`: Access secret resolution
 6. `email_binding`: Quota activation status
 7. `schema_freshness`: Schema synchronization age
+
+---
+
+## End-to-End System Topology
+
+The full data flow from user action to analytics delivery:
+
+```mermaid
+sequenceDiagram
+    participant User as User / Agent
+    participant CLI as Shiplens CLI
+    participant Cloud as Cloud API
+    participant SDK as @shiplens/sdk
+    participant MCP as Local MCP Proxy
+
+    Note over User,MCP: Onboarding Flow (Steps 1-7)
+    User->>CLI: 1. npx @shiplens/cli init
+    CLI->>Cloud: 2. POST /api/connect (register project, 4-level taxonomy)
+    Cloud-->>CLI: app_id + dashboard_url
+    CLI->>CLI: 3. Inject SDK code into entry file
+    CLI->>CLI: 4. Install @shiplens/sdk dependency
+    CLI->>CLI: 5. Scan pages → .shiplens/contexts/<app_id>.md
+    User->>CLI: 6. shiplens auth bind --email <email>
+    CLI->>Cloud: POST /api/auth/start-email
+    Cloud-->>User: 7. Magic Link email → user clicks → project activated
+    Cloud-->>CLI: Device credentials → shiplens.env (0600)
+
+    Note over User,MCP: Analysis Flow (Steps 8-12)
+    User->>CLI: 8. shiplens summary / query / sql
+    CLI->>CLI: 9. Load shiplens.env credentials
+    CLI->>Cloud: 10. Authenticated API request
+    Cloud-->>CLI: 11. Analytics data response
+    CLI-->>User: 12. JSON output → Agent synthesizes insights
+
+    Note over User,MCP: MCP Integration (Alternative)
+    User->>MCP: shiplens mcp serve (stdio)
+    MCP->>Cloud: Proxied requests with shiplens.env credentials
+    Cloud-->>MCP: Data response
+    MCP-->>User: Structured tool results
+```
+
+### Component Roles
+
+| Component | Responsibility |
+|-----------|---------------|
+| **CLI** (`npx @shiplens/cli`) | Onboarding, SDK injection, local config management, direct analytics queries |
+| **Cloud API** | Project registration, authentication, data aggregation, dashboard hosting |
+| **SDK** (`@shiplens/sdk`) | Client-side event capture (pageviews, clicks, custom events), DOM hashing |
+| **shiplens.env** | Device-level credentials (Access Secret), file permission 0600, auto-gitignored |
+| **Local MCP Proxy** (`shiplens mcp serve`) | stdio bridge for IDE/Agent integration, forwards requests with local credentials |
+| **.shiplens.json** | Project metadata cache (app_id, project_name, schema timestamp) |
+| **.shiplens/contexts/\<app_id\>.md** | Business context dictionary (page routes, button labels, feature descriptions) |
+| **.shiplens/learnings.md** | User preference overrides (date range, metrics, filters) |
+
