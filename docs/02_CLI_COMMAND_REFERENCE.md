@@ -142,7 +142,16 @@ Performs health checks on:
 
 ---
 
-## End-to-End System Topology
+## 11. Action Presets (`action`)
+
+```bash
+shiplens action [action_id] [--list] [--json]
+```
+
+- `shiplens action --list`: List all 42 textbook growth & analytics actions and categories
+- `shiplens action <action_id>`: Retrieve deterministic execution steps, CLI commands, and methodology theory for a specific scenario (e.g. `lifecycle_stage`, `customer_ltv`)
+
+---
 
 The full data flow from user action to analytics delivery:
 

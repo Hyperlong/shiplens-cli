@@ -498,6 +498,57 @@ function testInitAccountStatusResolution() {
   console.log('  ✅ init User Account Status Resolution test passed');
 }
 
+async function testActionPresetCatalogAndExecution() {
+  console.log('🧪 Test 20: Action Preset Catalog & Execution');
+  const { loadActions, handleAction } = require('../lib/commands/action');
+
+  const actions = loadActions();
+  assert.ok(Array.isArray(actions));
+  assert.strictEqual(actions.length, 42, `Expected 42 actions, got ${actions.length}`);
+
+  const sample = actions.find((a) => a.id === 'lifecycle_stage');
+  assert.ok(sample);
+  assert.strictEqual(sample.id, 'lifecycle_stage');
+  assert.ok(sample.steps.length >= 3);
+  assert.ok(sample.commands.length > 0);
+  assert.ok(sample.foundation);
+
+  // Test handleAction --list
+  let capturedList = null;
+  const mockCtxList = {
+    isJSON: true,
+    output: (data) => { capturedList = data; },
+  };
+  await handleAction([], { list: true }, mockCtxList);
+  assert.ok(capturedList);
+  assert.strictEqual(capturedList.ok, true);
+  assert.strictEqual(capturedList.total, 42);
+
+  // Test handleAction single id
+  let capturedSingle = null;
+  const mockCtxSingle = {
+    isJSON: true,
+    output: (data) => { capturedSingle = data; },
+  };
+  await handleAction(['lifecycle_stage'], {}, mockCtxSingle);
+  assert.ok(capturedSingle);
+  assert.strictEqual(capturedSingle.ok, true);
+  assert.strictEqual(capturedSingle.action.id, 'lifecycle_stage');
+
+  // Test handleAction not found with suggestion
+  let errorCaught = null;
+  try {
+    await handleAction(['lifecycle'], {}, mockCtxSingle);
+  } catch (e) {
+    errorCaught = e;
+  }
+  assert.ok(errorCaught);
+  assert.strictEqual(errorCaught.code, 'ACTION_NOT_FOUND');
+  assert.ok(errorCaught.suggestions.includes('lifecycle_stage'));
+
+  console.log('  ✅ Action Preset Catalog & Execution test passed');
+}
+
 async function runAllTests() {
   console.log('🚀 Running Shiplens CLI test suite...\n');
   testArgsParsing();
@@ -519,10 +570,12 @@ async function runAllTests() {
   testServerIssuedDeviceEnvPersistence();
   testProjectContextCanonicalPath();
   testInitAccountStatusResolution();
-  console.log('\n🎉 All unit tests passed (100% Passed)! (19/19)');
+  await testActionPresetCatalogAndExecution();
+  console.log('\n🎉 All unit tests passed (100% Passed)! (20/20)');
 }
 
 runAllTests().catch((err) => {
   console.error(err);
   process.exit(1);
 });
+
