@@ -1,11 +1,12 @@
 {
   "name": "@shiplens/cli",
-  "version": "1.4.0",
-  "description": "Shiplens CLI (In Development) - 15-second zero-config analytics initialization and full telemetry analysis engine",
+  "version": "1.4.3",
+  "description": "Shiplens CLI — Automated Web User Analytics & AI Agent Analysis Engine",
   "main": "lib/index.js",
   "bin": {
-    "shiplens-cli": "bin/shiplens.js",
-    "shiplens": "bin/shiplens.js"
+    "cli": "./bin/shiplens.js",
+    "shiplens": "./bin/shiplens.js",
+    "shiplens-cli": "./bin/shiplens.js"
   },
   "keywords": [
     "shiplens",
@@ -27,12 +28,16 @@
   },
   "homepage": "https://shiplens.dev",
   "scripts": {
-    "test": "node test/cli.test.js"
+    "test": "node test/cli.test.js",
+    "sync-prompts": "node scripts/sync-prompts.js",
+    "prepack": "node scripts/sync-prompts.js",
+    "prepublishOnly": "node scripts/sync-prompts.js"
   },
   "files": [
     "bin",
     "lib",
     "prompts",
+    "docs",
     "README.md",
     "LICENSE"
   ],

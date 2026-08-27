@@ -8,9 +8,8 @@ This directory hosts the deterministic CLI scenario-based prompt libraries for S
 
 ```text
 prompts/
-├── README.md                 # Multilingual architecture overview
-├── prompts_cli_en.md         # [English] 42 deterministic CLI analysis scenarios
-└── prompts_cli_zh.md         # [中文] 42 个确定性 CLI 分析场景
+├── README.md                 # Prompt architecture overview
+└── prompts_cli_en-US.md      # [English] 42 deterministic CLI analysis scenarios
 ```
 
 ---

@@ -328,12 +328,16 @@ Sources:
 #### [How to Run an A/A Test to Validate the Experiment System?] (Suffix: Data Fetching)
 ```text
 How to run an A/A test to verify experiment platform integrity?
-1. Run `shiplens sql --query "SELECT properties.variant AS variant, COUNT(DISTINCT user_id) AS total_users, countIf(event_name = 'click') / COUNT(DISTINCT user_id) AS ctr, avg(session_duration) AS avg_duration FROM events WHERE properties.experiment_id = 'aa_test' AND timestamp >= now() - INTERVAL 7 DAY GROUP BY variant" --json` to extract telemetry across identical A/A cohorts.
-2. Run two-sample significance tests. If metric divergence p-value < 0.05, flag systematic bias in the randomization engine or tracking instrumentation.
-3. If no divergence is detected (p >= 0.05 and no SRM), certify experiment infrastructure as sound for A/B testing.
+1. Explain the A/A testing rationale to the user and prompt for the validation mode:
+   - Mode A (Retrospective Validation on Completed Experiment): Apply hash-based pseudo-random splitting to the control cohort:
+     `shiplens sql --query "SELECT if(cityHash64(user_id) % 2 = 0, 'control_a', 'control_b') AS aa_group, COUNT(DISTINCT user_id) AS total_users, countIf(event_name = 'click') / COUNT(DISTINCT user_id) AS ctr, avg(session_duration) AS avg_duration FROM events WHERE properties.experiment_id = '<exp_id>' AND properties.variant = 'control' AND timestamp >= now() - INTERVAL 14 DAY GROUP BY aa_group" --json`
+   - Mode B (Real-time Ongoing A/A Experiment): Query live A/A telemetry:
+     `shiplens sql --query "SELECT properties.variant AS variant, COUNT(DISTINCT user_id) AS total_users, countIf(event_name = 'click') / COUNT(DISTINCT user_id) AS ctr, avg(session_duration) AS avg_duration FROM events WHERE properties.experiment_id = '<aa_exp_id>' AND timestamp >= now() - INTERVAL 7 DAY GROUP BY variant" --json`
+2. Run two-sample significance tests (t-test or chi-square test). If metric divergence p-value < 0.05 (rejecting null hypothesis of equality), flag systematic bias in the randomization engine or tracking instrumentation.
+3. If no divergence is detected (p >= 0.05 and no Sample Ratio Mismatch / SRM), certify experiment infrastructure as sound for A/B testing.
 ---
 Analysis Foundation:
-- A/A Testing & System Calibration: Exposing two groups to identical experiences validates that the experimentation pipeline is unbiased. If an A/A test yields statistically significant differences (p < 0.05), the split engine, tracking instrumentation, or metric computation has fundamental flaws that must be resolved prior to running A/B tests.
+- A/A Testing & System Calibration: Exposing two groups to identical experiences (via live split or post-hoc control group sub-sampling) validates that the experimentation pipeline is unbiased. If an A/A test yields statistically significant differences (p < 0.05), the split engine, tracking instrumentation, or metric computation has fundamental flaws that must be resolved prior to running A/B tests.
 ---
 Sources:
 - Trustworthy Online Controlled Experiments, Ron Kohavi, Diane Tang, Ya Xu -- Part I, Chapter 3: "Twyman's Law and Experimentation Trustworthiness" & Part V, Chapter 19: "A/A Tests"
@@ -619,15 +623,17 @@ Sources:
 #### [Configure A/B Test Event Tracking] (Suffix: Data Fetching)
 ```text
 Configure A/B test behavioral telemetry:
-1. Prompt user to locate component rendering code for variant experiments.
+1. Prompt user to locate component rendering and split logic in frontend code.
 2. Inject Shiplens SDK tracking attributes: `Shiplens.track('experiment_exposure', { experiment_id: '<exp_id>', variant: 'control' | 'treatment' })`.
-3. Run `shiplens doctor --json` to verify telemetry ingestion health.
+3. Establish an A/A testing validation stage (e.g. control-arm A/A sub-tagging or dry run), and run `shiplens doctor --json` to verify telemetry ingestion health and split symmetry.
+4. Ensure telemetry from both variants is reported independently for subsequent retention and conversion analysis.
 ---
 Analysis Foundation:
 - Variant Telemetry Tagging & Isolation: Reliable online experimentation requires event-level isolation. Emitting persistent experiment_id and variant_id tags prevents crossover contamination across multi-page user sessions.
+- Pre-Experiment A/A Validation: Incorporating an A/A test phase before launching A/B variants verifies telemetry symmetry and split integrity, preventing invalid experiment outcomes.
 ---
 Sources:
-- Trustworthy Online Controlled Experiments, Ron Kohavi, Diane Tang, Ya Xu -- Part I, Chapter 2: "Running and Analyzing Experiments"
+- Trustworthy Online Controlled Experiments, Ron Kohavi, Diane Tang, Ya Xu -- Part I, Chapter 2: "Running and Analyzing Experiments" & Part V, Chapter 19: "A/A Tests"
 ```
 
 #### [Track and Measure User Aha Moment] (Suffix: Data Fetching, Dashboard Creation)

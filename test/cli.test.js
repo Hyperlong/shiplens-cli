@@ -179,26 +179,17 @@ function testDetectExistingApp() {
   }
 }
 
-function testAutoGitCommit() {
-  console.log('🧪 Test 7: Automatic Git staging & commit');
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-test-git-'));
+function testNoGitOverreach() {
+  console.log('🧪 Test 7: SDK injection does not perform unexpected Git commits');
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-test-nogit-'));
   const { execSync } = require('child_process');
-  const { autoGitCommit } = require('../lib/injector');
+  const { injectSkill } = require('../lib/injector');
   try {
     execSync('git init', { cwd: tempDir, stdio: 'ignore' });
-    execSync('git config user.email "ci@example.com"', { cwd: tempDir, stdio: 'ignore' });
-    execSync('git config user.name "CI Runner"', { cwd: tempDir, stdio: 'ignore' });
-
-    fs.writeFileSync(path.join(tempDir, 'test.txt'), 'hello shiplens', 'utf8');
-    const res = autoGitCommit(tempDir, 'feat: test commit');
-    assert.strictEqual(res.committed, true);
-    assert.ok(res.hash);
-
-    const resNoChange = autoGitCommit(tempDir);
-    assert.strictEqual(resNoChange.committed, false);
-    assert.strictEqual(resNoChange.reason, 'no_changes');
-
-    console.log('  ✅ Automatic Git commit passed');
+    injectSkill(tempDir);
+    const status = execSync('git status --porcelain', { cwd: tempDir, encoding: 'utf8' }).trim();
+    assert.ok(status.includes('.agents'), 'Skill file should remain unstaged; CLI must not force commit');
+    console.log('  ✅ No Git overreach test passed');
   } finally {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
@@ -463,19 +454,19 @@ function testInitAccountStatusResolution() {
   // 1. Unauthenticated
   const unauthResolved = { is_present: false };
   let status1 = 'not_logged_in_unlinked';
-  let text1 = 'Not Logged In (Project unlinked)';
+  let text1 = 'Not Logged In (Default state after first installation or no valid local credentials)';
   if (unauthResolved.is_present) {
     status1 = 'logged_in_linked';
     text1 = 'Logged In (Project linked to account)';
   }
   assert.strictEqual(status1, 'not_logged_in_unlinked');
-  assert.strictEqual(text1, 'Not Logged In (Project unlinked)');
+  assert.strictEqual(text1, 'Not Logged In (Default state after first installation or no valid local credentials)');
 
   // 2. Authenticated and linked
   const authResolved = { is_present: true };
   const connRespLinked = { app_id: 'app_123', account_linked: true };
   let status2 = 'not_logged_in_unlinked';
-  let text2 = 'Not Logged In (Project unlinked)';
+  let text2 = 'Not Logged In (Default state after first installation or no valid local credentials)';
   if (authResolved.is_present) {
     if (connRespLinked.account_linked !== false && connRespLinked.linked !== false && !connRespLinked.unlinked) {
       status2 = 'logged_in_linked';
@@ -491,7 +482,7 @@ function testInitAccountStatusResolution() {
   // 3. Authenticated but unlinked
   const connRespUnlinked = { app_id: 'app_456', account_linked: false };
   let status3 = 'not_logged_in_unlinked';
-  let text3 = 'Not Logged In (Project unlinked)';
+  let text3 = 'Not Logged In (Default state after first installation or no valid local credentials)';
   if (authResolved.is_present) {
     if (connRespUnlinked.account_linked !== false && connRespUnlinked.linked !== false && !connRespUnlinked.unlinked) {
       status3 = 'logged_in_linked';
@@ -515,7 +506,7 @@ async function runAllTests() {
   testFrameworkInjection();
   testSkillInjection();
   testDetectExistingApp();
-  testAutoGitCommit();
+  testNoGitOverreach();
   testAuthBindArgParsing();
   testAuthBindInvalidEmail();
   testQueryFileFlag();
