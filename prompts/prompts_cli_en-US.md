@@ -2,7 +2,7 @@
 
 ---
 
-## Scenario Outline (42 Scenarios)
+## Scenario Outline (43 Scenarios)
 
 > **How to use**: Scan this outline to find the matching scenario, then jump to its full section below for deterministic CLI commands and analysis steps.
 

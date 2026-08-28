@@ -504,7 +504,7 @@ async function testActionPresetCatalogAndExecution() {
 
   const actions = loadActions();
   assert.ok(Array.isArray(actions));
-  assert.strictEqual(actions.length, 42, `Expected 42 actions, got ${actions.length}`);
+  assert.strictEqual(actions.length, 43, `Expected 43 actions, got ${actions.length}`);
 
   const sample = actions.find((a) => a.id === 'lifecycle_stage');
   assert.ok(sample);
@@ -512,6 +512,10 @@ async function testActionPresetCatalogAndExecution() {
   assert.ok(sample.steps.length >= 3);
   assert.ok(sample.commands.length > 0);
   assert.ok(sample.foundation);
+
+  const smokeSample = actions.find((a) => a.id === 'production_smoke_test');
+  assert.ok(smokeSample, 'Expected production_smoke_test action in catalog');
+  assert.strictEqual(smokeSample.id, 'production_smoke_test');
 
   // Test handleAction --list
   let capturedList = null;
@@ -522,7 +526,7 @@ async function testActionPresetCatalogAndExecution() {
   await handleAction([], { list: true }, mockCtxList);
   assert.ok(capturedList);
   assert.strictEqual(capturedList.ok, true);
-  assert.strictEqual(capturedList.total, 42);
+  assert.strictEqual(capturedList.total, 43);
 
   // Test handleAction single id
   let capturedSingle = null;
@@ -549,6 +553,54 @@ async function testActionPresetCatalogAndExecution() {
   console.log('  ✅ Action Preset Catalog & Execution test passed');
 }
 
+async function testInitIdempotentFastForward() {
+  console.log('🧪 Test 21: init Idempotent Fast-Forward & Self-Healing');
+  const { handleInit } = require('../lib/commands/init');
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-init-fast-'));
+
+  try {
+    // Setup existing project state
+    fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify({ name: 'test-app', version: '1.0.0' }));
+    fs.mkdirSync(path.join(tempDir, 'src'), { recursive: true });
+    fs.writeFileSync(path.join(tempDir, 'src/index.js'), `import React from 'react';\n`);
+    fs.writeFileSync(path.join(tempDir, '.shiplens.json'), JSON.stringify({
+      app_id: 'app_existing_test_123',
+      project_name: 'test-app',
+      api_url: 'https://api.shiplens.dev',
+    }));
+
+    const cwdBackup = process.cwd();
+    process.chdir(tempDir);
+
+    let outputResult = null;
+    const mockCtx = {
+      isJSON: true,
+      client: {
+        baseURL: 'https://api.shiplens.dev',
+        connect: async () => { throw new Error('connect should not be called in idempotent fast-forward'); },
+      },
+      resolvedAuth: { is_present: false },
+      output: (res) => { outputResult = res; },
+    };
+
+    await handleInit([], { 'no-install': true }, mockCtx);
+    process.chdir(cwdBackup);
+
+    assert.ok(outputResult, 'Expected output result');
+    assert.strictEqual(outputResult.ok, true, 'Expected ok: true');
+    assert.strictEqual(outputResult.reconnected, true, 'Expected reconnected: true');
+    assert.strictEqual(outputResult.app_id, 'app_existing_test_123');
+    assert.strictEqual(outputResult.dashboard_url, 'https://api.shiplens.dev/dashboard/app_existing_test_123');
+    assert.strictEqual(process.exitCode || 0, 0, 'Expected exit code 0');
+
+    console.log('  ✅ init Idempotent Fast-Forward test passed');
+  } finally {
+    try {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    } catch (e) {}
+  }
+}
+
 async function runAllTests() {
   console.log('🚀 Running Shiplens CLI test suite...\n');
   testArgsParsing();
@@ -571,7 +623,8 @@ async function runAllTests() {
   testProjectContextCanonicalPath();
   testInitAccountStatusResolution();
   await testActionPresetCatalogAndExecution();
-  console.log('\n🎉 All unit tests passed (100% Passed)! (20/20)');
+  await testInitIdempotentFastForward();
+  console.log('\n🎉 All unit tests passed (100% Passed)! (21/21)');
 }
 
 runAllTests().catch((err) => {
