@@ -62,11 +62,11 @@
 35. [Track Subscription Revenue & Build Daily Subscription Dashboard](#track-subscription-revenue--build-daily-subscription-dashboard)
 
 ### Initial Setup (5)
-36. [Shiplens CLI One-Click Setup & Analytics Initialization](#shiplens-cli-one-click-setup--analytics-initialization)
-37. [Connect New Project & Link to Existing Account](#connect-new-project--link-to-existing-account)
-38. [Remove Shiplens SDK & Analytics Data](#remove-shiplens-sdk--analytics-data)
-39. [Uninstall Shiplens CLI](#uninstall-shiplens-cli)
-40. [Generate Context Descriptions for All Pages and Buttons](#generate-context-descriptions-for-all-pages-and-buttons)
+36. [Shiplens CLI One-Click Setup & Analytics Initialization](#shiplens-cli-one-click-setup-analytics-initialization)
+37. [Use Shiplens CLI to Install Analytics SDK & Link to Existing Account](#use-shiplens-cli-to-install-analytics-sdk-link-to-existing-account)
+38. [Delete Shiplens Project Analytics Data & SDK (No Longer Needed)](#delete-shiplens-project-analytics-data-sdk-no-longer-needed)
+39. [Delete Shiplens CLI](#delete-shiplens-cli)
+40. [Use Shiplens CLI to Generate Context Descriptions for All Pages and Buttons](#use-shiplens-cli-to-generate-context-descriptions-for-all-pages-and-buttons)
 
 ### Troubleshooting & Diagnostics (3)
 41. [Test Shiplens Telemetry Pipeline and Environment](#test-shiplens-telemetry-pipeline-and-environment)
@@ -744,9 +744,9 @@ Set up Shiplens analytics: install SDK, create the project, and retrieve the liv
 4. Upon receiving the user's email, run: npx.cmd --yes @shiplens/cli auth bind --email <email> --json.
 ```
 
-#### [setup_bind_project] Connect New Project & Link to Existing Account (Suffix: None)
+#### [setup_bind_project] Use Shiplens CLI to Install Analytics SDK & Link to Existing Account (Suffix: None)
 ```text
-Install the Shiplens analytics SDK in this new project and link it to the user's existing Shiplens account:
+Use Shiplens CLI to install the analytics SDK in this new project and link it to the user's existing Shiplens account:
 
 1. Run the project setup & initialization command:
    - Windows: npx.cmd --yes @shiplens/cli init --json
@@ -770,9 +770,9 @@ Install the Shiplens analytics SDK in this new project and link it to the user's
 Please prioritize calling Shiplens CLI (Action: setup_bind_project) to execute the above requirements.
 ```
 
-#### [remove_sdk] Remove Shiplens SDK & Analytics Data (Suffix: None)
+#### [remove_sdk] Delete Shiplens Project Analytics Data & SDK (No Longer Needed) (Suffix: None)
 ```text
-Remove Shiplens SDK integration and analytics data:
+Delete Shiplens project analytics data and SDK integration (analytics no longer needed):
 1. Read `.shiplens.json` in the project root to get project name, app_id, and instrumented file paths.
 2. Clearly display the project name and app_id to be deleted, warn the user that historical events and hosted data will be permanently purged, and pause for explicit user confirmation ("Confirm deleting this project").
 3. Upon confirmation, remove SDK imports/instrumentation code from local frontend files, and delete `./.shiplens.json` and `.shiplens/contexts/<app_id>.md`.
@@ -781,16 +781,16 @@ Remove Shiplens SDK integration and analytics data:
 Please prioritize calling Shiplens CLI (Action: remove_sdk) to execute the above requirements.
 ```
 
-#### [uninstall_cli] Uninstall Shiplens CLI (Suffix: None)
+#### [uninstall_cli] Delete Shiplens CLI (Suffix: None)
 ```text
 Please prioritize calling Shiplens CLI (Action: uninstall_cli) to execute the above requirements.
  - Windows: npm.cmd uninstall -g @shiplens/cli
  - macOS/Linux: npm uninstall -g @shiplens/cli
 ```
 
-#### [generate_context] Generate Context Descriptions for All Pages and Buttons (Suffix: None)
+#### [generate_context] Use Shiplens CLI to Generate Context Descriptions for All Pages and Buttons (Suffix: None)
 ```text
-Map pages, features, and button layouts into `.shiplens/contexts/<app_id>.md` so AI analytics can map numbers and IDs to concrete functionality:
+Use Shiplens CLI to map pages, features, and button layouts into `.shiplens/contexts/<app_id>.md` so AI analytics can understand the business context behind each metric:
 1. Check `./.shiplens.json` for current app_id and project name.
 2. Inspect frontend code and routes to extract feature descriptions, user-facing copy, and button texts, locations, and actions.
 3. Write structured details into `.shiplens/contexts/<app_id>.md`, binding app_id and project name in the header.

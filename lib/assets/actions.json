@@ -662,10 +662,10 @@
     },
     {
       "id": "setup_bind_project",
-      "title": "Connect New Project & Link to Existing Account",
+      "title": "Use Shiplens CLI to Install Analytics SDK & Link to Existing Account",
       "suffix": "None",
       "category": "Initial Setup",
-      "prompt": "Install the Shiplens analytics SDK in this new project and link it to the user's existing Shiplens account:",
+      "prompt": "Use Shiplens CLI to install the analytics SDK in this new project and link it to the user's existing Shiplens account:",
       "steps": [
         "1. Run the project setup & initialization command:\n- Windows: npx.cmd --yes @shiplens/cli init --json\n- macOS/Linux: npx --yes @shiplens/cli init --json",
         "2. Inspect returned `user_account_status` and credential states:\n- [Branch A: Logged in & linked] (`logged_in_linked`):\n- [Branch B: No local credentials detected] (`not_logged_in_unlinked` or `activation_required=true`):\n- [Branch C: Account quota / project limit reached] (Error `QUOTA_EXCEEDED` / `PLAN_LIMIT` / unable to link):",
@@ -677,10 +677,10 @@
     },
     {
       "id": "remove_sdk",
-      "title": "Remove Shiplens SDK & Analytics Data",
+      "title": "Delete Shiplens Project Analytics Data & SDK (No Longer Needed)",
       "suffix": "None",
       "category": "Initial Setup",
-      "prompt": "Remove Shiplens SDK integration and analytics data:",
+      "prompt": "Delete Shiplens project analytics data and SDK integration (analytics no longer needed):",
       "steps": [
         "1. Read `.shiplens.json` in the project root to get project name, app_id, and instrumented file paths.",
         "2. Clearly display the project name and app_id to be deleted, warn the user that historical events and hosted data will be permanently purged, and pause for explicit user confirmation (\"Confirm deleting this project\").",
@@ -693,7 +693,7 @@
     },
     {
       "id": "uninstall_cli",
-      "title": "Uninstall Shiplens CLI",
+      "title": "Delete Shiplens CLI",
       "suffix": "None",
       "category": "Initial Setup",
       "prompt": "Please prioritize calling Shiplens CLI (Action: uninstall_cli) to execute the above requirements. - Windows: npm.cmd uninstall -g @shiplens/cli - macOS/Linux: npm uninstall -g @shiplens/cli",
@@ -704,10 +704,10 @@
     },
     {
       "id": "generate_context",
-      "title": "Generate Context Descriptions for All Pages and Buttons",
+      "title": "Use Shiplens CLI to Generate Context Descriptions for All Pages and Buttons",
       "suffix": "None",
       "category": "Initial Setup",
-      "prompt": "Map pages, features, and button layouts into `.shiplens/contexts/<app_id>.md` so AI analytics can map numbers and IDs to concrete functionality:",
+      "prompt": "Use Shiplens CLI to map pages, features, and button layouts into `.shiplens/contexts/<app_id>.md` so AI analytics can understand the business context behind each metric:",
       "steps": [
         "1. Check `./.shiplens.json` for current app_id and project name.",
         "2. Inspect frontend code and routes to extract feature descriptions, user-facing copy, and button texts, locations, and actions.",
