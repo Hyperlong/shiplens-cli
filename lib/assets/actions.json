@@ -661,6 +661,21 @@
       "source": ""
     },
     {
+      "id": "setup_bind_project",
+      "title": "Connect New Project & Link to Existing Account",
+      "suffix": "None",
+      "category": "Initial Setup",
+      "prompt": "Install the Shiplens analytics SDK in this new project and link it to the user's existing Shiplens account:",
+      "steps": [
+        "1. Run the project setup & initialization command:\n- Windows: npx.cmd --yes @shiplens/cli init --json\n- macOS/Linux: npx --yes @shiplens/cli init --json",
+        "2. Inspect returned `user_account_status` and credential states:\n- [Branch A: Logged in & linked] (`logged_in_linked`):\n- [Branch B: No local credentials detected] (`not_logged_in_unlinked` or `activation_required=true`):\n- [Branch C: Account quota / project limit reached] (Error `QUOTA_EXCEEDED` / `PLAN_LIMIT` / unable to link):",
+        "3. Output the final project summary and dashboard link, confirming the project is ready for analytics queries."
+      ],
+      "commands": [],
+      "foundation": "",
+      "source": ""
+    },
+    {
       "id": "remove_sdk",
       "title": "Remove Shiplens SDK & Analytics Data",
       "suffix": "None",

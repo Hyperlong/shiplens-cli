@@ -61,16 +61,17 @@
 34. [Track and Measure User Aha Moment](#track-and-measure-user-aha-moment)
 35. [Track Subscription Revenue & Build Daily Subscription Dashboard](#track-subscription-revenue--build-daily-subscription-dashboard)
 
-### Initial Setup (4)
+### Initial Setup (5)
 36. [Shiplens CLI One-Click Setup & Analytics Initialization](#shiplens-cli-one-click-setup--analytics-initialization)
-37. [Remove Shiplens SDK & Analytics Data](#remove-shiplens-sdk--analytics-data)
-38. [Uninstall Shiplens CLI](#uninstall-shiplens-cli)
-39. [Generate Context Descriptions for All Pages and Buttons](#generate-context-descriptions-for-all-pages-and-buttons)
+37. [Connect New Project & Link to Existing Account](#connect-new-project--link-to-existing-account)
+38. [Remove Shiplens SDK & Analytics Data](#remove-shiplens-sdk--analytics-data)
+39. [Uninstall Shiplens CLI](#uninstall-shiplens-cli)
+40. [Generate Context Descriptions for All Pages and Buttons](#generate-context-descriptions-for-all-pages-and-buttons)
 
 ### Troubleshooting & Diagnostics (3)
-40. [Test Shiplens Telemetry Pipeline and Environment](#test-shiplens-telemetry-pipeline-and-environment)
-41. [Enable Local Debug Mode and Verify Event Reporting](#enable-local-debug-mode-and-verify-event-reporting)
-42. [Test Event Reporting in Production Build & Release Environments](#test-event-reporting-in-production-build--release-environments)
+41. [Test Shiplens Telemetry Pipeline and Environment](#test-shiplens-telemetry-pipeline-and-environment)
+42. [Enable Local Debug Mode and Verify Event Reporting](#enable-local-debug-mode-and-verify-event-reporting)
+43. [Test Event Reporting in Production Build & Release Environments](#test-event-reporting-in-production-build--release-environments)
 
 ---
 
@@ -741,6 +742,32 @@ Set up Shiplens analytics: install SDK, create the project, and retrieve the liv
 2. Present the standard project & dashboard summary (including: Project Name, App ID, Code Injection file, User Account Status, Live Dashboard / Activation URL);
 3. Immediately prompt the user for their email address (informing them that you will register on their behalf and Shiplens will send an activation email for 50,000 monthly free events and project binding);
 4. Upon receiving the user's email, run: npx.cmd --yes @shiplens/cli auth bind --email <email> --json.
+```
+
+#### [setup_bind_project] Connect New Project & Link to Existing Account (Suffix: None)
+```text
+Install the Shiplens analytics SDK in this new project and link it to the user's existing Shiplens account:
+
+1. Run the project setup & initialization command:
+   - Windows: npx.cmd --yes @shiplens/cli init --json
+   - macOS/Linux: npx --yes @shiplens/cli init --json
+   (Automatically detects framework, installs SDK dependency, injects code entry, and creates cloud project)
+
+2. Inspect returned `user_account_status` and credential states:
+   - [Branch A: Logged in & linked] (`logged_in_linked`):
+     No extra step needed; present the project summary card containing App ID, Project Name, Injected file, and Live Dashboard URL (`dashboard_url`).
+   - [Branch B: No local credentials detected] (`not_logged_in_unlinked` or `activation_required=true`):
+     Prompt the user for their registered Shiplens account email, and upon reply run:
+     `npx.cmd --yes @shiplens/cli auth bind --email <email> --json`
+     Instruct the user to click the Magic Link in the email to authorize and complete project binding.
+   - [Branch C: Account quota / project limit reached] (Error `QUOTA_EXCEEDED` / `PLAN_LIMIT` / unable to link):
+     Clearly notify the user that their current free/existing tier project limit or monthly event quota is full;
+     Provide upgrade instructions: recommend upgrading to Pro / Team tier (URL: https://shiplens.dev/pricing or console settings) for expanded project limits and advanced analytics;
+     Note that once upgraded, re-running the bind command will activate immediately without modifying code.
+
+3. Output the final project summary and dashboard link, confirming the project is ready for analytics queries.
+
+Please prioritize calling Shiplens CLI (Action: setup_bind_project) to execute the above requirements.
 ```
 
 #### [remove_sdk] Remove Shiplens SDK & Analytics Data (Suffix: None)
