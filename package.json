@@ -4,9 +4,9 @@
   "description": "Shiplens CLI — Automated Web User Analytics & AI Agent Analysis Engine",
   "main": "lib/index.js",
   "bin": {
-    "cli": "./bin/shiplens.js",
-    "shiplens": "./bin/shiplens.js",
-    "shiplens-cli": "./bin/shiplens.js"
+    "cli": "bin/shiplens.js",
+    "shiplens": "bin/shiplens.js",
+    "shiplens-cli": "bin/shiplens.js"
   },
   "keywords": [
     "shiplens",
