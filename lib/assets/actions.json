@@ -649,9 +649,9 @@
       "title": "Shiplens CLI One-Click Setup & Analytics Initialization",
       "suffix": "None",
       "category": "Initial Setup",
-      "prompt": "Set up Shiplens analytics: extract project description, install SDK, create the project, and retrieve the live dashboard URL.",
+      "prompt": "Set up Shiplens analytics: install SDK, create the project, and retrieve the live dashboard URL.",
       "steps": [
-        "1. Run CLI initialization command:\n- Windows: npx.cmd --yes @shiplens/cli init\n- macOS/Linux: npx --yes @shiplens/cli init",
+        "1. Run CLI initialization command:\n- Windows: npx.cmd --yes @shiplens/cli init --json\n- macOS/Linux: npx --yes @shiplens/cli init --json",
         "2. Present the standard project & dashboard summary (including: Project Name, App ID, Code Injection file, User Account Status, Live Dashboard / Activation URL);",
         "3. Immediately prompt the user for their email address (informing them that you will register on their behalf and Shiplens will send an activation email for 50,000 monthly free events and project binding);",
         "4. Upon receiving the user's email, run: npx.cmd --yes @shiplens/cli auth bind --email <email> --json."
