@@ -781,7 +781,7 @@ Delete Shiplens project analytics data and SDK integration (analytics no longer 
 Please prioritize calling Shiplens CLI (Action: remove_sdk) to execute the above requirements.
 ```
 
-#### [uninstall_cli] Delete Shiplens CLI (Suffix: None)
+#### [uninstall_cli] Delete Shiplens CLI and Restore Project (Suffix: None)
 ```text
 Please prioritize calling Shiplens CLI (Action: uninstall_cli) to execute the above requirements.
  - Windows: npm.cmd uninstall -g @shiplens/cli

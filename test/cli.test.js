@@ -591,9 +591,91 @@ async function testInitIdempotentFastForward() {
     assert.strictEqual(outputResult.reconnected, true, 'Expected reconnected: true');
     assert.strictEqual(outputResult.app_id, 'app_existing_test_123');
     assert.strictEqual(outputResult.dashboard_url, 'https://api.shiplens.dev/dashboard/app_existing_test_123');
+    assert.strictEqual(outputResult.context_generated, true, 'Expected context_generated: true');
+    assert.ok(fs.existsSync(path.join(tempDir, '.shiplens', 'contexts', 'app_existing_test_123.md')), 'Expected context file generated on disk');
     assert.strictEqual(process.exitCode || 0, 0, 'Expected exit code 0');
 
-    console.log('  ✅ init Idempotent Fast-Forward test passed');
+    console.log('  ✅ init Idempotent Fast-Forward & Context Generation test passed');
+  } finally {
+    try {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    } catch (e) {}
+  }
+}
+
+async function testProjectContextAutoGeneration() {
+  console.log('🧪 Test 22: Project Context (.shiplens/contexts/<app_id>.md) Auto-Generation & Scan');
+  const { generateProjectContext } = require('../lib/context-generator');
+  const { handleContext } = require('../lib/commands/context');
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-context-gen-'));
+
+  try {
+    // 1. Create a mock React/Next.js project with pages and buttons
+    fs.mkdirSync(path.join(tempDir, 'src/app/pricing'), { recursive: true });
+    fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify({ name: 'cool-saas', dependencies: { next: '14.0.0' } }));
+    fs.writeFileSync(path.join(tempDir, 'src/app/page.tsx'), `
+      export default function Home() {
+        return (
+          <main>
+            <h1>Ship Faster with AI Analytics</h1>
+            <p>The privacy-friendly user behavior analytics platform for modern web apps.</p>
+            <button id="hero-start-free" data-shiplens-label="hero_cta" onClick={() => handleStart()}>Start Free Trial</button>
+            <a href="/pricing" className="btn-link">View Pricing</a>
+          </main>
+        );
+      }
+    `);
+    fs.writeFileSync(path.join(tempDir, 'src/app/pricing/page.tsx'), `
+      export default function Pricing() {
+        return (
+          <div>
+            <h2>Simple, Predictable Pricing</h2>
+            <li>50,000 free events per month</li>
+            <li>Real-time ClickHouse engine</li>
+            <button id="upgrade-pro" onClick={() => checkout()}>Upgrade to Pro $14</button>
+            <details>
+              <summary>Can I cancel anytime?</summary>
+              Yes, cancel with one click from dashboard.
+            </details>
+          </div>
+        );
+      }
+    `);
+
+    // 2. Test generateProjectContext
+    const appId = 'app_test_ctx_9876';
+    const genResult = generateProjectContext(tempDir, appId, 'cool-saas', 'nextjs-app');
+
+    assert.ok(genResult);
+    assert.strictEqual(genResult.totalPages, 2, `Expected 2 pages, got ${genResult.totalPages}`);
+    assert.ok(genResult.totalButtons >= 3, `Expected >= 3 buttons, got ${genResult.totalButtons}`);
+    assert.ok(fs.existsSync(genResult.filePath), 'Expected context file to exist on disk');
+
+    const mdContent = fs.readFileSync(genResult.filePath, 'utf8');
+    assert.ok(mdContent.includes('app_test_ctx_9876'));
+    assert.ok(mdContent.includes('cool-saas'));
+    assert.ok(mdContent.includes('hero_cta') || mdContent.includes('hero-start-free'));
+    assert.ok(mdContent.includes('upgrade-pro'));
+    assert.ok(mdContent.includes('50,000 free events per month'));
+
+    // 3. Test handleContext('generate')
+    const cwdBackup = process.cwd();
+    process.chdir(tempDir);
+    let captured = null;
+    const mockCtx = {
+      isJSON: true,
+      resolveAppId: () => appId,
+      output: (res) => { captured = res; },
+    };
+    await handleContext('generate', [], {}, mockCtx);
+    process.chdir(cwdBackup);
+
+    assert.ok(captured);
+    assert.strictEqual(captured.ok, true);
+    assert.strictEqual(captured.action, 'generate');
+    assert.strictEqual(captured.pages_count, 2);
+
+    console.log('  ✅ Project Context Auto-Generation test passed');
   } finally {
     try {
       fs.rmSync(tempDir, { recursive: true, force: true });
@@ -624,11 +706,13 @@ async function runAllTests() {
   testInitAccountStatusResolution();
   await testActionPresetCatalogAndExecution();
   await testInitIdempotentFastForward();
-  console.log('\n🎉 All unit tests passed (100% Passed)! (21/21)');
+  await testProjectContextAutoGeneration();
+  console.log('\n🎉 All unit tests passed (100% Passed)! (22/22)');
 }
 
 runAllTests().catch((err) => {
   console.error(err);
   process.exit(1);
 });
+
 

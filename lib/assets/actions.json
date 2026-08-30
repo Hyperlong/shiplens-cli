@@ -693,7 +693,7 @@
     },
     {
       "id": "uninstall_cli",
-      "title": "Delete Shiplens CLI",
+      "title": "Delete Shiplens CLI and Restore Project",
       "suffix": "None",
       "category": "Initial Setup",
       "prompt": "Please prioritize calling Shiplens CLI (Action: uninstall_cli) to execute the above requirements. - Windows: npm.cmd uninstall -g @shiplens/cli - macOS/Linux: npm uninstall -g @shiplens/cli",
