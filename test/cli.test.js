@@ -777,6 +777,62 @@ function testASTExtractorDeepVerification() {
   console.log('  ✅ Babel AST Interactive Elements Deep Verification passed');
 }
 
+async function testInitOfflineFallbackAndGitignore() {
+  console.log('🧪 Test 24: init Offline-First Fallback & Auto Gitignore Maintenance');
+  const { handleInit } = require('../lib/commands/init');
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-init-offline-'));
+
+  try {
+    fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify({ name: 'my-turnip-app', version: '1.0.0' }));
+    fs.mkdirSync(path.join(tempDir, 'src'), { recursive: true });
+    fs.writeFileSync(path.join(tempDir, 'src/index.js'), `import React from 'react';\nexport default function App() { return <button id="btn-submit">Submit</button>; }\n`);
+    fs.writeFileSync(path.join(tempDir, '.gitignore'), `node_modules\n.env\n`);
+
+    const cwdBackup = process.cwd();
+    process.chdir(tempDir);
+
+    let outputResult = null;
+    const mockCtx = {
+      isJSON: true,
+      client: {
+        baseURL: 'https://shiplens.dev',
+        connect: async () => {
+          const timeoutErr = new Error('Request timed out (8000ms)');
+          timeoutErr.code = 'NETWORK_FAILED';
+          throw timeoutErr;
+        },
+      },
+      resolvedAuth: { is_present: false },
+      output: (res) => { outputResult = res; },
+    };
+
+    await handleInit([], { 'no-install': true }, mockCtx);
+    process.chdir(cwdBackup);
+
+    assert.ok(outputResult, 'Expected output result');
+    assert.strictEqual(outputResult.ok, true, 'Expected ok: true in offline fallback');
+    assert.strictEqual(outputResult.offline_mode, true, 'Expected offline_mode: true');
+    assert.ok(outputResult.app_id.startsWith('app_my_turnip_app_'), 'Expected generated local app_id');
+    assert.strictEqual(outputResult.context_generated, true, 'Expected AST context to be generated in offline mode');
+    assert.ok(outputResult.context_buttons_count >= 1, 'Expected at least 1 button scanned');
+    assert.strictEqual(outputResult.skill_injected, true, 'Expected skill to be injected');
+
+    // Verify .gitignore automatically updated
+    const gitignoreContent = fs.readFileSync(path.join(tempDir, '.gitignore'), 'utf8');
+    assert.ok(gitignoreContent.includes('shiplens.env*'), 'Expected .gitignore to contain shiplens.env* automatically');
+
+    // Verify injected code
+    const indexContent = fs.readFileSync(path.join(tempDir, 'src/index.js'), 'utf8');
+    assert.ok(indexContent.includes('initShiplens'), 'Expected initShiplens injected into entry file');
+
+    console.log('  ✅ init Offline-First Fallback & Auto Gitignore Maintenance test passed');
+  } finally {
+    try {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    } catch (e) {}
+  }
+}
+
 async function runAllTests() {
   console.log('🚀 Running Shiplens CLI test suite...\n');
   testArgsParsing();
@@ -802,7 +858,8 @@ async function runAllTests() {
   await testInitIdempotentFastForward();
   await testProjectContextAutoGeneration();
   testASTExtractorDeepVerification();
-  console.log('\n🎉 All unit tests passed (100% Passed)! (23/23)');
+  await testInitOfflineFallbackAndGitignore();
+  console.log('\n🎉 All unit tests passed (100% Passed)! (24/24)');
 }
 
 runAllTests().catch((err) => {
