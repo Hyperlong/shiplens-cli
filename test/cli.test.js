@@ -683,6 +683,100 @@ async function testProjectContextAutoGeneration() {
   }
 }
 
+function testASTExtractorDeepVerification() {
+  console.log('🧪 Test 23: Babel AST Interactive Elements Deep Verification');
+  const { extractInteractiveElements } = require('../lib/extractor');
+
+  const jsxSnippet = `
+    import React from 'react';
+    import { CustomButton, PrimaryCTA, Link as RouterLink } from '@/components/ui';
+
+    export default function CheckoutPage() {
+      const handleCheckout = () => { console.log('checkout'); };
+      const isAuth = true;
+
+      return (
+        <div className="container">
+          <h1>Complete Your Purchase</h1>
+          <p>Annual Subscription Plan</p>
+          
+          {/* 1. Custom button with Chinese text */}
+          <CustomButton onClick={handleCheckout}>立即支付 $99</CustomButton>
+
+          {/* 2. PrimaryCTA with explicit data-shiplens-label */}
+          <PrimaryCTA data-shiplens-label="annual_plan_cta" data-testid="test-cta">
+            <span>Upgrade Now</span>
+          </PrimaryCTA>
+
+          {/* 3. Native button without attributes */}
+          <button>提交订单</button>
+
+          {/* 4. Native input submit */}
+          <input type="submit" value="确认结算" />
+
+          {/* 5. Custom Link with href */}
+          <RouterLink href="/pricing">返回定价页</RouterLink>
+
+          {/* 6. Conditional rendering branch */}
+          {isAuth ? (
+            <button id="btn-logout" onClick={() => logout()}>退出登录</button>
+          ) : (
+            <button id="btn-login" onClick={() => login()}>立即登录</button>
+          )}
+
+          {/* 7. Non-interactive head-like link (should be ignored) */}
+          <link rel="stylesheet" href="/style.css" />
+        </div>
+      );
+    }
+  `;
+
+  const results = extractInteractiveElements(jsxSnippet, 'src/pages/checkout.tsx');
+  assert.ok(Array.isArray(results), 'Expected array of interactive elements');
+  assert.ok(results.length >= 6, `Expected at least 6 interactive elements, got ${results.length}`);
+
+  // Check 1: Custom button
+  const customBtn = results.find((r) => r.text.includes('立即支付'));
+  assert.ok(customBtn, 'CustomButton should be detected');
+  assert.strictEqual(customBtn.tag, 'custombutton');
+  assert.ok(customBtn.is_custom_component, 'Should mark is_custom_component');
+  assert.ok(customBtn.source_loc.includes('src/pages/checkout.tsx'), 'Should record source_loc');
+  assert.ok(!customBtn.id.includes('btn_btn_'), 'Should not contain double btn_ prefix for Chinese text');
+
+  // Check 2: Priority data-shiplens-label
+  const ctaBtn = results.find((r) => r.id === 'annual_plan_cta');
+  assert.ok(ctaBtn, 'data-shiplens-label should have top priority for ID');
+  assert.strictEqual(ctaBtn.label, 'annual_plan_cta');
+  assert.ok(ctaBtn.text.includes('Upgrade Now'), 'Nested span text should be extracted');
+
+  // Check 3: Native button with no attributes
+  const noAttrBtn = results.find((r) => r.text === '提交订单');
+  assert.ok(noAttrBtn, 'Native <button> with no attributes should be detected');
+  assert.strictEqual(noAttrBtn.tag, 'button');
+
+  // Check 4: Input submit
+  const inputSubmit = results.find((r) => r.text === '确认结算');
+  assert.ok(inputSubmit, 'Input submit with value attribute should be detected');
+  assert.strictEqual(inputSubmit.tag, 'input');
+
+  // Check 5: Router Link
+  const routerLink = results.find((r) => r.text === '返回定价页');
+  assert.ok(routerLink, 'RouterLink should be detected');
+  assert.ok(routerLink.action_hint.includes('/pricing'), 'Should infer navigation action');
+
+  // Check 6: Conditional rendering both extracted
+  const logoutBtn = results.find((r) => r.id === 'btn-logout');
+  const loginBtn = results.find((r) => r.id === 'btn-login');
+  assert.ok(logoutBtn, 'Logout button in conditional expression should be extracted');
+  assert.ok(loginBtn, 'Login button in conditional expression should be extracted');
+
+  // Check 7: Head link ignored
+  const stylesheetLink = results.find((r) => r.tag === 'link' && r.text.includes('style.css'));
+  assert.strictEqual(stylesheetLink, undefined, 'Stylesheet <link> should be ignored');
+
+  console.log('  ✅ Babel AST Interactive Elements Deep Verification passed');
+}
+
 async function runAllTests() {
   console.log('🚀 Running Shiplens CLI test suite...\n');
   testArgsParsing();
@@ -707,7 +801,8 @@ async function runAllTests() {
   await testActionPresetCatalogAndExecution();
   await testInitIdempotentFastForward();
   await testProjectContextAutoGeneration();
-  console.log('\n🎉 All unit tests passed (100% Passed)! (22/22)');
+  testASTExtractorDeepVerification();
+  console.log('\n🎉 All unit tests passed (100% Passed)! (23/23)');
 }
 
 runAllTests().catch((err) => {

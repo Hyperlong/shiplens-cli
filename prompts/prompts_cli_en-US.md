@@ -792,7 +792,7 @@ Please prioritize calling Shiplens CLI (Action: uninstall_cli) to execute the ab
 ```text
 Use Shiplens CLI to map pages, features, and button layouts into `.shiplens/contexts/<app_id>.md` so AI analytics can understand the business context behind each metric:
 1. Check `./.shiplens.json` for current app_id and project name.
-2. Inspect frontend code and routes to extract feature descriptions, user-facing copy, and button texts, locations, and actions.
+2. Run AST static code scan across frontend code and routes to extract page purposes, feature copy, interactive buttons, test IDs, selectors, and exact source code locations.
 3. Write structured details into `.shiplens/contexts/<app_id>.md`, binding app_id and project name in the header.
 Please prioritize calling Shiplens CLI (Action: generate_context) to execute the above requirements.
 ```
