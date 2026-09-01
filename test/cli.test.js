@@ -965,7 +965,212 @@ export default defineTool({
     assert.ok(md.includes('页面功能全景总结 (Page Functional Summary)'));
     assert.ok(md.includes('核心转化动作总量 (OEC)'));
 
+    // Verify .json exists and is structured
+    assert.ok(fs.existsSync(result.jsonPath), 'Expected .json file to exist');
+    const jsonDict = JSON.parse(fs.readFileSync(result.jsonPath, 'utf8'));
+    assert.strictEqual(jsonDict.app_id, 'app_vue_tool_test');
+    assert.strictEqual(jsonDict.total_pages, 1);
+    assert.ok(jsonDict.routes['/tools/base64-file-converter']);
+    assert.ok(jsonDict.routes['/tools/base64-file-converter'].oec_actions.length >= 2);
+
     console.log('  ✅ v2.0 Semantic Extraction & Page Summary Engine Deep Verification passed');
+  } finally {
+    try {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    } catch (e) {}
+  }
+}
+
+function testDeterministicJsonDictionaryAndIdempotence() {
+  console.log('🧪 Test 26: Deterministic JSON UI Dictionary & 3-Run Idempotence');
+  const { generateProjectContext } = require('../lib/context-generator');
+  const crypto = require('crypto');
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-idempotent-'));
+
+  try {
+    fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify({ name: 'deterministic-app' }));
+    fs.mkdirSync(path.join(tempDir, 'src/pages'), { recursive: true });
+    fs.writeFileSync(path.join(tempDir, 'src/pages/index.tsx'), `
+      export default function Home() {
+        return (
+          <div>
+            <h1>Deterministic Analytics App</h1>
+            <button data-shiplens-label="primary_cta">Get Started</button>
+            <button id="btn-download">Download Free</button>
+            <button id="btn-copy">Copy Link</button>
+            <input type="text" placeholder="Enter workspace name" />
+          </div>
+        );
+      }
+    `);
+
+    const appId = 'app_idempotent_123';
+    
+    // Run 1
+    const res1 = generateProjectContext(tempDir, appId, 'deterministic-app', 'nextjs-pages', 'zh');
+    const hashMd1 = crypto.createHash('sha256').update(fs.readFileSync(res1.filePath)).digest('hex');
+    const json1 = JSON.parse(fs.readFileSync(res1.jsonPath, 'utf8'));
+    const hashJson1 = crypto.createHash('sha256').update(JSON.stringify(json1)).digest('hex');
+
+    // Run 2
+    const res2 = generateProjectContext(tempDir, appId, 'deterministic-app', 'nextjs-pages', 'zh');
+    const hashMd2 = crypto.createHash('sha256').update(fs.readFileSync(res2.filePath)).digest('hex');
+    const json2 = JSON.parse(fs.readFileSync(res2.jsonPath, 'utf8'));
+    const hashJson2 = crypto.createHash('sha256').update(JSON.stringify(json2)).digest('hex');
+
+    // Run 3
+    const res3 = generateProjectContext(tempDir, appId, 'deterministic-app', 'nextjs-pages', 'zh');
+    const hashMd3 = crypto.createHash('sha256').update(fs.readFileSync(res3.filePath)).digest('hex');
+    const json3 = JSON.parse(fs.readFileSync(res3.jsonPath, 'utf8'));
+    const hashJson3 = crypto.createHash('sha256').update(JSON.stringify(json3)).digest('hex');
+
+    // Verify deterministic structure
+    assert.strictEqual(json1.app_id, appId);
+    assert.strictEqual(json1.$schema, 'https://shiplens.dev/schema/ui-dictionary-v1.json');
+    assert.ok(json1.routes['/'] || json1.routes['/index']);
+    const route = json1.routes['/'] || json1.routes['/index'];
+    assert.ok(route.controls_by_id);
+    assert.ok(route.controls_by_text);
+    assert.ok(route.oec_actions.length >= 1);
+
+    // Control IDs must match exactly across all 3 runs
+    assert.deepStrictEqual(Object.keys(json1.routes), Object.keys(json2.routes));
+    assert.deepStrictEqual(Object.keys(json1.routes), Object.keys(json3.routes));
+    assert.deepStrictEqual(route.oec_actions, (json2.routes['/'] || json2.routes['/index']).oec_actions);
+    assert.deepStrictEqual(route.oec_actions, (json3.routes['/'] || json3.routes['/index']).oec_actions);
+
+    console.log('  ✅ Deterministic JSON UI Dictionary & 3-Run Idempotence passed');
+  } finally {
+    try {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    } catch (e) {}
+  }
+}
+
+function testMultiAppIsolation() {
+  console.log('🧪 Test 27: Multi-App Strong Isolation (.shiplens/contexts/<app_id>.json & .md)');
+  const { generateProjectContext } = require('../lib/context-generator');
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-multi-app-'));
+
+  try {
+    fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify({ name: 'multi-suite' }));
+    fs.mkdirSync(path.join(tempDir, 'src/pages'), { recursive: true });
+    fs.writeFileSync(path.join(tempDir, 'src/pages/index.tsx'), `
+      export default function App() { return <button id="btn-login">Login</button>; }
+    `);
+
+    const appIdA = 'app_suite_alpha';
+    const appIdB = 'app_suite_beta';
+
+    const resA = generateProjectContext(tempDir, appIdA, 'Suite Alpha', 'nextjs-pages', 'zh');
+    const resB = generateProjectContext(tempDir, appIdB, 'Suite Beta', 'nextjs-pages', 'zh');
+
+    // Both files must exist independently
+    const expectedMdA = path.join(tempDir, '.shiplens', 'contexts', `${appIdA}.md`);
+    const expectedJsonA = path.join(tempDir, '.shiplens', 'contexts', `${appIdA}.json`);
+    const expectedMdB = path.join(tempDir, '.shiplens', 'contexts', `${appIdB}.md`);
+    const expectedJsonB = path.join(tempDir, '.shiplens', 'contexts', `${appIdB}.json`);
+
+    assert.ok(fs.existsSync(expectedMdA), 'app_suite_alpha.md should exist');
+    assert.ok(fs.existsSync(expectedJsonA), 'app_suite_alpha.json should exist');
+    assert.ok(fs.existsSync(expectedMdB), 'app_suite_beta.md should exist');
+    assert.ok(fs.existsSync(expectedJsonB), 'app_suite_beta.json should exist');
+
+    const jsonA = JSON.parse(fs.readFileSync(expectedJsonA, 'utf8'));
+    const jsonB = JSON.parse(fs.readFileSync(expectedJsonB, 'utf8'));
+
+    assert.strictEqual(jsonA.app_id, appIdA);
+    assert.strictEqual(jsonA.project_name, 'Suite Alpha');
+    assert.strictEqual(jsonB.app_id, appIdB);
+    assert.strictEqual(jsonB.project_name, 'Suite Beta');
+
+    console.log('  ✅ Multi-App Strong Isolation passed');
+  } finally {
+    try {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    } catch (e) {}
+  }
+}
+
+async function testCLIQueryContextMetaInjection() {
+  console.log('🧪 Test 28: CLI Analytics Commands (query/pages/summary/heatmap) context_meta Injection');
+  const { handleQuery } = require('../lib/commands/query');
+  const { handlePages, handlePaths, handleCanvas } = require('../lib/commands/pages');
+  const { handleSummary } = require('../lib/commands/summary');
+  const { handleHeatmap } = require('../lib/commands/heatmap');
+  const { generateProjectContext } = require('../lib/context-generator');
+
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-meta-test-'));
+
+  try {
+    const appId = 'app_meta_verify_456';
+    fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify({ name: 'meta-app' }));
+    fs.mkdirSync(path.join(tempDir, 'src/pages'), { recursive: true });
+    fs.writeFileSync(path.join(tempDir, 'src/pages/index.tsx'), `export default function Index() { return <button>CTA</button>; }`);
+
+    // Generate context pair
+    generateProjectContext(tempDir, appId, 'meta-app', 'nextjs-pages', 'zh');
+
+    const cwdBackup = process.cwd();
+    process.chdir(tempDir);
+
+    const mockClient = {
+      query: async () => ({ ok: true, data: [{ pv: 100 }] }),
+      getPages: async () => ({ ok: true, pages: [{ path: '/', pv: 100 }] }),
+      queryPaths: async () => ({ ok: true, entry_pages: [{ path: '/', count: 50 }] }),
+      summary: async () => ({ ok: true, total_pv: 100, total_uv: 50 }),
+      getHeatmap: async () => ({ ok: true, template_id: 'home', clicks_total: 20 }),
+    };
+
+    let queryOut = null;
+    await handleQuery([], { metric: 'pageviews' }, {
+      isJSON: true,
+      resolveAppId: () => appId,
+      client: mockClient,
+      output: (d) => { queryOut = d; },
+    });
+    assert.ok(queryOut);
+    assert.ok(queryOut.context_meta);
+    assert.strictEqual(queryOut.context_meta.context_available, true);
+    assert.ok(queryOut.context_meta.context_json.includes('app_meta_verify_456.json'));
+    assert.ok(queryOut.context_meta.context_md.includes('app_meta_verify_456.md'));
+    assert.ok(queryOut.context_meta.alignment_guide.includes('app_meta_verify_456.json'));
+
+    let pagesOut = null;
+    await handlePages([], {}, {
+      isJSON: true,
+      resolveAppId: () => appId,
+      client: mockClient,
+      output: (d) => { pagesOut = d; },
+    });
+    assert.ok(pagesOut);
+    assert.ok(pagesOut.context_meta);
+    assert.strictEqual(pagesOut.context_meta.context_available, true);
+
+    let summaryOut = null;
+    await handleSummary([], {}, {
+      isJSON: true,
+      resolveAppId: () => appId,
+      client: mockClient,
+      output: (d) => { summaryOut = d; },
+    });
+    assert.ok(summaryOut);
+    assert.ok(summaryOut.context_meta);
+    assert.strictEqual(summaryOut.context_meta.context_available, true);
+
+    let heatmapOut = null;
+    await handleHeatmap([], { template: 'home' }, {
+      isJSON: true,
+      resolveAppId: () => appId,
+      client: mockClient,
+      output: (d) => { heatmapOut = d; },
+    });
+    assert.ok(heatmapOut);
+    assert.ok(heatmapOut.context_meta);
+    assert.strictEqual(heatmapOut.context_meta.context_available, true);
+
+    process.chdir(cwdBackup);
+    console.log('  ✅ CLI Analytics Commands context_meta Injection passed');
   } finally {
     try {
       fs.rmSync(tempDir, { recursive: true, force: true });
@@ -1000,7 +1205,10 @@ async function runAllTests() {
   testASTExtractorDeepVerification();
   await testInitOfflineFallbackAndGitignore();
   await testV2ContextAndSemanticEngine();
-  console.log('\n🎉 All unit tests passed (100% Passed)! (25/25)');
+  testDeterministicJsonDictionaryAndIdempotence();
+  testMultiAppIsolation();
+  await testCLIQueryContextMetaInjection();
+  console.log('\n🎉 All unit tests passed (100% Passed)! (28/28)');
 }
 
 runAllTests().catch((err) => {

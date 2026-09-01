@@ -790,10 +790,10 @@ Please prioritize calling Shiplens CLI (Action: uninstall_cli) to execute the ab
 
 #### [generate_context] Use Shiplens CLI to Generate Context Descriptions for All Pages and Buttons (Suffix: None)
 ```text
-Use Shiplens CLI to map pages, features, and button layouts into `.shiplens/contexts/<app_id>.md` so AI analytics can understand the business context behind each metric:
+Use Shiplens CLI to map pages, features, and button layouts into `.shiplens/contexts/<app_id>.md` (deep business context) and `.shiplens/contexts/<app_id>.json` (deterministic UI dictionary) so AI analytics can understand the business context and exact control IDs behind each metric:
 1. Check `./.shiplens.json` for current app_id and project name.
 2. Run AST static code scan across frontend code and routes to extract page purposes, feature copy, interactive buttons, test IDs, selectors, and exact source code locations.
-3. Write structured details into `.shiplens/contexts/<app_id>.md`, binding app_id and project name in the header.
+3. Write structured details into `.shiplens/contexts/<app_id>.md` and `.shiplens/contexts/<app_id>.json` pair, binding app_id and project name.
 Please prioritize calling Shiplens CLI (Action: generate_context) to execute the above requirements.
 ```
 
