@@ -777,21 +777,21 @@ function testASTExtractorDeepVerification() {
   console.log('  ✅ Babel AST Interactive Elements Deep Verification passed');
 }
 
-async function testInitOfflineFallbackAndGitignore() {
-  console.log('🧪 Test 24: init Offline-First Fallback & Auto Gitignore Maintenance');
+async function testInitConnectFailedAndAtomicRollback() {
+  console.log('🧪 Test 24: init Cloud Connection Failure & Atomic Cleanliness');
   const { handleInit } = require('../lib/commands/init');
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-init-offline-'));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-init-atomic-'));
 
   try {
     fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify({ name: 'my-turnip-app', version: '1.0.0' }));
     fs.mkdirSync(path.join(tempDir, 'src'), { recursive: true });
-    fs.writeFileSync(path.join(tempDir, 'src/index.js'), `import React from 'react';\nexport default function App() { return <button id="btn-submit">Submit</button>; }\n`);
+    const originalCode = `import React from 'react';\nexport default function App() { return <button id="btn-submit">Submit</button>; }\n`;
+    fs.writeFileSync(path.join(tempDir, 'src/index.js'), originalCode);
     fs.writeFileSync(path.join(tempDir, '.gitignore'), `node_modules\n.env\n`);
 
     const cwdBackup = process.cwd();
     process.chdir(tempDir);
 
-    let outputResult = null;
     const mockCtx = {
       isJSON: true,
       client: {
@@ -803,29 +803,31 @@ async function testInitOfflineFallbackAndGitignore() {
         },
       },
       resolvedAuth: { is_present: false },
-      output: (res) => { outputResult = res; },
+      output: () => {},
     };
 
-    await handleInit([], { 'no-install': true }, mockCtx);
+    let caughtErr = null;
+    try {
+      await handleInit([], { 'no-install': true }, mockCtx);
+    } catch (e) {
+      caughtErr = e;
+    }
     process.chdir(cwdBackup);
 
-    assert.ok(outputResult, 'Expected output result');
-    assert.strictEqual(outputResult.ok, true, 'Expected ok: true in offline fallback');
-    assert.strictEqual(outputResult.offline_mode, true, 'Expected offline_mode: true');
-    assert.ok(outputResult.app_id.startsWith('app_my_turnip_app_'), 'Expected generated local app_id');
-    assert.strictEqual(outputResult.context_generated, true, 'Expected AST context to be generated in offline mode');
-    assert.ok(outputResult.context_buttons_count >= 1, 'Expected at least 1 button scanned');
-    assert.strictEqual(outputResult.skill_injected, true, 'Expected skill to be injected');
+    // Verify error is raised with CONNECT_FAILED code
+    assert.ok(caughtErr, 'Expected handleInit to throw on connection failure');
+    assert.strictEqual(caughtErr.code, 'CONNECT_FAILED');
+    assert.ok(caughtErr.message.includes('Failed to connect to Shiplens cloud'));
 
-    // Verify .gitignore automatically updated
-    const gitignoreContent = fs.readFileSync(path.join(tempDir, '.gitignore'), 'utf8');
-    assert.ok(gitignoreContent.includes('shiplens.env*'), 'Expected .gitignore to contain shiplens.env* automatically');
+    // Verify workspace remains clean (atomic)
+    assert.strictEqual(fs.existsSync(path.join(tempDir, '.shiplens.json')), false, '.shiplens.json should NOT be created');
+    assert.strictEqual(fs.existsSync(path.join(tempDir, '.shiplens')), false, '.shiplens directory should NOT be created');
+    
+    // Verify source code is NOT modified
+    const currentCode = fs.readFileSync(path.join(tempDir, 'src/index.js'), 'utf8');
+    assert.strictEqual(currentCode, originalCode, 'Source code should remain unchanged upon connection failure');
 
-    // Verify injected code
-    const indexContent = fs.readFileSync(path.join(tempDir, 'src/index.js'), 'utf8');
-    assert.ok(indexContent.includes('initShiplens'), 'Expected initShiplens injected into entry file');
-
-    console.log('  ✅ init Offline-First Fallback & Auto Gitignore Maintenance test passed');
+    console.log('  ✅ init Cloud Connection Failure & Atomic Cleanliness test passed');
   } finally {
     try {
       fs.rmSync(tempDir, { recursive: true, force: true });
@@ -1203,7 +1205,7 @@ async function runAllTests() {
   await testInitIdempotentFastForward();
   await testProjectContextAutoGeneration();
   testASTExtractorDeepVerification();
-  await testInitOfflineFallbackAndGitignore();
+  await testInitConnectFailedAndAtomicRollback();
   await testV2ContextAndSemanticEngine();
   testDeterministicJsonDictionaryAndIdempotence();
   testMultiAppIsolation();
