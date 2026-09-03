@@ -646,14 +646,14 @@
     },
     {
       "id": "setup_init",
-      "title": "Shiplens CLI One-Click Setup & Analytics Initialization",
+      "title": "Quick Start: One-Click Integration of Local Project with Analytics",
       "suffix": "None",
       "category": "Initial Setup",
-      "prompt": "Set up Shiplens analytics: install SDK, create the project, and retrieve the live dashboard URL.",
+      "prompt": "Install Shiplens analytics CLI, register product profile in cloud, integrate local project code with tracking SDK, and retrieve live analytics dashboard URL.",
       "steps": [
         "1. Run CLI initialization command:\n- Windows: npx.cmd --yes @shiplens/cli init --json\n- macOS/Linux: npx --yes @shiplens/cli init --json",
-        "2. Present the standard project & dashboard summary (including: Project Name, App ID, Code Injection file, User Account Status, Live Dashboard / Activation URL);",
-        "3. Immediately prompt the user for their email address (informing them that you will register on their behalf and Shiplens will send an activation email for 50,000 monthly free events and project binding);",
+        "2. Present the standard product profile & dashboard summary (including: Product Name, App ID, Code Injection file, User Account Status, Live Dashboard / Product Activation URL);",
+        "3. Immediately prompt the user for their email address (informing them that you will register on their behalf and Shiplens will send an activation email for 50,000 monthly free events and account binding);",
         "4. Upon receiving the user's email, run: npx.cmd --yes @shiplens/cli auth bind --email <email> --json."
       ],
       "commands": [],
@@ -662,14 +662,14 @@
     },
     {
       "id": "setup_bind_project",
-      "title": "Use Shiplens CLI to Install Analytics SDK & Link to Existing Account",
+      "title": "Integrate Local Project with Analytics & Link Product to Account",
       "suffix": "None",
       "category": "Initial Setup",
-      "prompt": "Use Shiplens CLI to install the analytics SDK in this new project and link it to the user's existing Shiplens account:",
+      "prompt": "Integrate local project code files with Shiplens analytics SDK, register cloud product profile, and link to the user's existing Shiplens account:",
       "steps": [
-        "1. Run the project setup & initialization command:\n- Windows: npx.cmd --yes @shiplens/cli init --json\n- macOS/Linux: npx --yes @shiplens/cli init --json",
-        "2. Inspect returned `user_account_status` and credential states:\n- [Branch A: Logged in & linked] (`logged_in_linked`):\n- [Branch B: No local credentials detected] (`not_logged_in_unlinked` or `activation_required=true`):\n- [Branch C: Account quota / project limit reached] (Error `QUOTA_EXCEEDED` / `PLAN_LIMIT` / unable to link):",
-        "3. Output the final project summary and dashboard link, confirming the project is ready for analytics queries."
+        "1. Run the integration & initialization command:\n- Windows: npx.cmd --yes @shiplens/cli init --json\n- macOS/Linux: npx --yes @shiplens/cli init --json",
+        "2. Inspect returned `user_account_status` and credential states:\n- [Branch A: Logged in & linked] (`logged_in_linked`):\n- [Branch B: No local credentials detected] (`not_logged_in_unlinked` or `activation_required=true`):\n- [Branch C: Account quota / product limit reached] (Error `QUOTA_EXCEEDED` / `PLAN_LIMIT` / unable to link):",
+        "3. Output the final product summary and dashboard link, confirming the product is ready for analytics queries."
       ],
       "commands": [],
       "foundation": "",
@@ -677,15 +677,15 @@
     },
     {
       "id": "remove_sdk",
-      "title": "Delete Shiplens Project Analytics Data & SDK (No Longer Needed)",
+      "title": "Remove SDK and Local Context Files & Permanently Delete Product Data",
       "suffix": "None",
       "category": "Initial Setup",
-      "prompt": "Delete Shiplens project analytics data and SDK integration (analytics no longer needed):",
+      "prompt": "Remove Shiplens SDK and local context files from local project, and permanently delete the product and its analytics data from account:",
       "steps": [
-        "1. Read `.shiplens.json` in the project root to get project name, app_id, and instrumented file paths.",
-        "2. Clearly display the project name and app_id to be deleted, warn the user that historical events and hosted data will be permanently purged, and pause for explicit user confirmation (\"Confirm deleting this project\").",
-        "3. Upon confirmation, remove SDK imports/instrumentation code from local frontend files, and delete `./.shiplens.json` and `.shiplens/contexts/<app_id>.md`.",
-        "4. Run CLI command to destroy cloud project: npx.cmd --yes @shiplens/cli projects delete --app-id <app_id> --force --json."
+        "1. Read `.shiplens.json` in local project root to get product name, app_id, and instrumented file paths.",
+        "2. Clearly display the product name and app_id to be deleted. Warn the user that this will permanently delete the product and its analytics data from their cloud account, but EMPHASIZE that local application source code will remain completely untouched. Pause for explicit user confirmation (\"Confirm deleting product analytics data\").",
+        "3. Upon confirmation, remove SDK imports/instrumentation code from local frontend files, and delete `./.shiplens.json` and `.shiplens/contexts/<app_id>.md` (Remove SDK and local context files).",
+        "4. Run CLI command to destroy cloud product: npx.cmd --yes @shiplens/cli projects delete --app-id <app_id> --force --json (Permanently delete product and analytics data from account; does not affect local code)."
       ],
       "commands": [],
       "foundation": "",
@@ -704,14 +704,14 @@
     },
     {
       "id": "generate_context",
-      "title": "Use Shiplens CLI to Generate Context Descriptions for All Pages and Buttons",
+      "title": "Update Local Business Context: Generate Descriptions for All Pages and Buttons",
       "suffix": "None",
       "category": "Initial Setup",
-      "prompt": "Use Shiplens CLI to map pages, features, and button layouts into `.shiplens/contexts/<app_id>.md` (deep business context) and `.shiplens/contexts/<app_id>.json` (deterministic UI dictionary) so AI analytics can understand the business context and exact control IDs behind each metric:",
+      "prompt": "Update local business context: rescan local frontend pages and buttons, refresh local business descriptions in `.shiplens/contexts/<app_id>.md` and `.shiplens/contexts/<app_id>.json` so AI analytics understands the exact business context and control IDs behind each metric:",
       "steps": [
-        "1. Check `./.shiplens.json` for current app_id and project name.",
+        "1. Check `./.shiplens.json` for current app_id and product name.",
         "2. Run AST static code scan across frontend code and routes to extract page purposes, feature copy, interactive buttons, test IDs, selectors, and exact source code locations.",
-        "3. Write structured details into `.shiplens/contexts/<app_id>.md` and `.shiplens/contexts/<app_id>.json` pair, binding app_id and project name."
+        "3. Write structured details into `.shiplens/contexts/<app_id>.md` and `.shiplens/contexts/<app_id>.json` pair, binding app_id and product name."
       ],
       "commands": [],
       "foundation": "",
