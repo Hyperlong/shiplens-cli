@@ -1225,7 +1225,7 @@ function testGuideDataStructure() {
   const guideText = formatPlainTextGuide();
   assert.ok(guideText.includes('Project Operations'));
   assert.ok(guideText.includes('Account Operations'));
-  assert.ok(guideText.includes('List Registered Products'));
+  assert.ok(guideText.includes('List Products Integrated with Analytics'));
   assert.ok(guideText.includes('Update Product Profile'));
   assert.ok(guideText.includes('Remove SDK and Local Context Files'));
   assert.ok(guideText.includes('http://120.26.230.33/demo/dashboard/prompts'));
