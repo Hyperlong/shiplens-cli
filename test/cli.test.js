@@ -1219,7 +1219,7 @@ function testGuideDataStructure() {
 
   assert.ok(GUIDE_DATA.core_capability);
   assert.strictEqual(GUIDE_DATA.core_capability.prompts_url, 'http://120.26.230.33/demo/dashboard/prompts');
-  assert.strictEqual(GUIDE_DATA.project_operations.length, 8);
+  assert.strictEqual(GUIDE_DATA.project_operations.length, 6);
   assert.strictEqual(GUIDE_DATA.account_operations.length, 5);
 
   const guideText = formatPlainTextGuide();
@@ -1227,6 +1227,7 @@ function testGuideDataStructure() {
   assert.ok(guideText.includes('Account Operations'));
   assert.ok(guideText.includes('List Registered Products'));
   assert.ok(guideText.includes('Update Product Profile'));
+  assert.ok(guideText.includes('Remove SDK and Local Context Files'));
   assert.ok(guideText.includes('http://120.26.230.33/demo/dashboard/prompts'));
 
   console.log('  ✅ guide data structure and catalog passed');
