@@ -1222,12 +1222,14 @@ function testGuideDataStructure() {
 
   assert.ok(GUIDE_DATA.core_capability);
   assert.strictEqual(GUIDE_DATA.core_capability.prompts_url, 'http://120.26.230.33/demo/dashboard/prompts');
-  assert.strictEqual(GUIDE_DATA.project_operations.length, 6);
+  assert.strictEqual(GUIDE_DATA.project_operations.length, 8);
   assert.strictEqual(GUIDE_DATA.account_operations.length, 5);
 
   const guideText = formatPlainTextGuide();
   assert.ok(guideText.includes('Project Operations'));
   assert.ok(guideText.includes('Account Operations'));
+  assert.ok(guideText.includes('List Account Projects'));
+  assert.ok(guideText.includes('Update Project Information'));
   assert.ok(guideText.includes('http://120.26.230.33/demo/dashboard/prompts'));
 
   console.log('  ✅ guide data structure and catalog passed');
@@ -1251,6 +1253,57 @@ function testAuthLoginAndLogout() {
     assert.ok(!fs.existsSync(localEnv));
     console.log('  ✅ auth logout credential purging passed');
   } finally {
+    try { fs.rmSync(tempDir, { recursive: true, force: true }); } catch (e) {}
+  }
+}
+
+async function testProjectsUpdateCommand() {
+  console.log('🧪 Test 32: projects update / edit command execution and local sync');
+  const { handleProjects } = require('../lib/commands/projects');
+  const { getLocalConfig, saveLocalConfig } = require('../lib/config');
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-proj-update-'));
+  const cwdBackup = process.cwd();
+
+  try {
+    process.chdir(tempDir);
+    saveLocalConfig(tempDir, {
+      app_id: 'app_test_update_123',
+      project_name: 'Old App Name',
+      description: 'Old Description',
+      industry: 'utilities',
+    });
+
+    let updatedPayload = null;
+    const mockClient = {
+      updateTaxonomy: async (appId, data) => {
+        updatedPayload = { appId, data };
+        return { ok: true, app_id: appId, ...data };
+      },
+    };
+
+    let outputResult = null;
+    await handleProjects('update', [], {
+      name: 'New App Title',
+      description: 'New App Description',
+    }, {
+      isJSON: true,
+      resolveAppId: () => 'app_test_update_123',
+      client: mockClient,
+      output: (d) => { outputResult = d; },
+    });
+
+    assert.ok(updatedPayload);
+    assert.strictEqual(updatedPayload.appId, 'app_test_update_123');
+    assert.strictEqual(updatedPayload.data.project_name, 'New App Title');
+    assert.strictEqual(updatedPayload.data.description, 'New App Description');
+
+    const syncedLocal = getLocalConfig(tempDir);
+    assert.strictEqual(syncedLocal.project_name, 'New App Title');
+    assert.strictEqual(syncedLocal.description, 'New App Description');
+
+    console.log('  ✅ projects update and local state machine sync passed');
+  } finally {
+    process.chdir(cwdBackup);
     try { fs.rmSync(tempDir, { recursive: true, force: true }); } catch (e) {}
   }
 }
@@ -1288,7 +1341,8 @@ async function runAllTests() {
   testCleanSdkAndContext();
   testGuideDataStructure();
   testAuthLoginAndLogout();
-  console.log('\n🎉 All unit tests passed (100% Passed)! (31/31)');
+  await testProjectsUpdateCommand();
+  console.log('\n🎉 All unit tests passed (100% Passed)! (32/32)');
 }
 
 runAllTests().catch((err) => {
