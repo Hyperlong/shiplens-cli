@@ -9,7 +9,7 @@ const { getLocalConfig, saveLocalConfig } = require('../lib/config');
 const { configureMcpClient, getMcpConfig } = require('../lib/mcp-config');
 const { saveDeviceEnv } = require('../lib/device-env');
 const { getContextFilePath, extractAppIdFromMarkdown } = require('../lib/commands/context');
-const { detectProject, injectSDK, installSDKDependency, FRAMEWORKS } = require('../lib/injector');
+const { detectProject, injectSDK, installSDKDependency, isProjectCold, writeSDKToManifest, FRAMEWORKS } = require('../lib/injector');
 
 function testArgsParsing() {
   console.log('🧪 Test 1: CLI arguments parsing');
@@ -290,14 +290,30 @@ function testDashboardsAIFlag() {
 }
 
 async function testInstallSDKDependencyFallback() {
-  console.log('🧪 Test 13: installSDKDependency 4-tier tiered racing download & fallback');
+  console.log('🧪 Test 13: installSDKDependency cold-repo auto-detection & resilient fallback');
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-test-install-'));
   try {
     fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify({ name: 'test-pkg', dependencies: {} }), 'utf8');
-    const res = await installSDKDependency(tempDir, 'non_existent_pkg_manager_123');
-    assert.ok(typeof res === 'object', 'Should return result object');
-    assert.ok('success' in res, 'Should contain success field');
-    console.log('  ✅ 4-tier tiered racing dependency installation fallback passed');
+
+    // Sub-test A: Cold repo detection (no node_modules) -> should be manifest_only, zero-delay
+    assert.strictEqual(isProjectCold(tempDir), true, 'Empty project directory should be cold repo');
+    const resCold = await installSDKDependency(tempDir, 'non_existent_pkg_manager_123');
+    assert.ok(typeof resCold === 'object', 'Should return result object');
+    assert.strictEqual(resCold.success, true, 'Should succeed');
+    assert.strictEqual(resCold.method, 'manifest_only', 'Should use manifest_only for cold repo');
+
+    // Verify package.json contains @shiplens/sdk
+    const pkgAfter = JSON.parse(fs.readFileSync(path.join(tempDir, 'package.json'), 'utf8'));
+    assert.ok(pkgAfter.dependencies['@shiplens/sdk'], 'package.json should contain @shiplens/sdk');
+
+    // Sub-test B: Hot repo with failing manager -> should trigger manifest_fallback safely
+    fs.mkdirSync(path.join(tempDir, 'node_modules'));
+    assert.strictEqual(isProjectCold(tempDir), false, 'Project with node_modules should be hot repo');
+    const resHotFail = await installSDKDependency(tempDir, 'non_existent_pkg_manager_123');
+    assert.strictEqual(resHotFail.success, true, 'Fallback should still succeed');
+    assert.strictEqual(resHotFail.method, 'manifest_fallback', 'Should fallback to manifest_fallback');
+
+    console.log('  ✅ cold-repo auto-detection & resilient fallback passed');
   } finally {
     try {
       fs.rmSync(tempDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
