@@ -18,13 +18,13 @@ Shiplens CLI is the official command-line tool for [shiplens.dev](https://shiple
 - **Web User Analytics**: Real-time traffic summaries, user journeys, retention cohorts, and click heatmaps.
 - **AI Agent Intelligence**: Query and analyze product behavior data directly from AI coding assistants via CLI and local stdio MCP proxy (`shiplens mcp serve`).
 - **AI-Powered Live Dashboards**: Assemble 12-column responsive analytics dashboards from natural language prompts.
-- **Business Context & Adaptive Learning**: Automatically maps DOM hashes to real page names and remembers per-project analysis preferences.
+- **Business Context & Adaptive Learning**: Automatically maps DOM hashes to real page names and remembers per-product analysis preferences.
 
 ---
 
 ## ⚡ Quick Start
 
-Run the initialization command in the root directory of any frontend project:
+Run the initialization command in the root directory of any local frontend project:
 
 ```bash
 # General terminal
@@ -43,7 +43,7 @@ npx --yes --registry=https://registry.npmmirror.com @shiplens/cli init
 
 | Command | Description |
 | :--- | :--- |
-| `shiplens init` | Onboard project, instrument tracking SDK, and inject AI skill |
+| `shiplens init` | Integrate local project with analytics (register product, install tracking SDK, and inject AI skill) |
 | `shiplens summary` | Macro traffic overview (PV, UV, dwell time, geos, devices) |
 | `shiplens query` | Multi-dimensional metrics aggregation and conversion funnels |
 | `shiplens sql` | Safe read-only custom SQL queries |

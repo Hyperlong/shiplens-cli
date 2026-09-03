@@ -62,11 +62,11 @@
 35. [Track Subscription Revenue & Build Daily Subscription Dashboard](#track-subscription-revenue--build-daily-subscription-dashboard)
 
 ### Initial Setup (5)
-36. [Shiplens CLI One-Click Setup & Analytics Initialization](#shiplens-cli-one-click-setup-analytics-initialization)
-37. [Use Shiplens CLI to Install Analytics SDK & Link to Existing Account](#use-shiplens-cli-to-install-analytics-sdk-link-to-existing-account)
-38. [Delete Shiplens Project Analytics Data & SDK (No Longer Needed)](#delete-shiplens-project-analytics-data-sdk-no-longer-needed)
+36. [Quick Start: One-Click Integration of Local Project with Analytics](#setup_init-quick-start-one-click-integration-of-local-project-with-analytics-suffix-none)
+37. [Integrate Local Project with Analytics & Link Product to Account](#setup_bind_project-integrate-local-project-with-analytics--link-product-to-account-suffix-none)
+38. [Remove SDK and Local Context Files & Permanently Delete Product Data](#remove_sdk-remove-sdk-and-local-context-files--permanently-delete-product-data-suffix-none)
 39. [Delete Shiplens CLI](#delete-shiplens-cli)
-40. [Use Shiplens CLI to Generate Context Descriptions for All Pages and Buttons](#use-shiplens-cli-to-generate-context-descriptions-for-all-pages-and-buttons)
+40. [Update Local Business Context: Generate Descriptions for All Pages and Buttons](#generate_context-update-local-business-context-generate-descriptions-for-all-pages-and-buttons-suffix-none)
 
 ### Troubleshooting & Diagnostics (3)
 41. [Test Shiplens Telemetry Pipeline and Environment](#test-shiplens-telemetry-pipeline-and-environment)
@@ -733,50 +733,50 @@ Sources:
 
 ### Initial Setup
 
-#### [setup_init] Shiplens CLI One-Click Setup & Analytics Initialization (Suffix: None)
+#### [setup_init] Quick Start: One-Click Integration of Local Project with Analytics (Suffix: None)
 ```text
-Set up Shiplens analytics: install SDK, create the project, and retrieve the live dashboard URL.
+Install Shiplens analytics CLI, register product profile in cloud, integrate local project code with tracking SDK, and retrieve live analytics dashboard URL.
 1. Run CLI initialization command:
    - Windows: npx.cmd --yes @shiplens/cli init --json
    - macOS/Linux: npx --yes @shiplens/cli init --json
-2. Present the standard project & dashboard summary (including: Project Name, App ID, Code Injection file, User Account Status, Live Dashboard / Activation URL);
-3. Immediately prompt the user for their email address (informing them that you will register on their behalf and Shiplens will send an activation email for 50,000 monthly free events and project binding);
+2. Present the standard product profile & dashboard summary (including: Product Name, App ID, Code Injection file, User Account Status, Live Dashboard / Product Activation URL);
+3. Immediately prompt the user for their email address (informing them that you will register on their behalf and Shiplens will send an activation email for 50,000 monthly free events and account binding);
 4. Upon receiving the user's email, run: npx.cmd --yes @shiplens/cli auth bind --email <email> --json.
 ```
 
-#### [setup_bind_project] Use Shiplens CLI to Install Analytics SDK & Link to Existing Account (Suffix: None)
+#### [setup_bind_project] Integrate Local Project with Analytics & Link Product to Account (Suffix: None)
 ```text
-Use Shiplens CLI to install the analytics SDK in this new project and link it to the user's existing Shiplens account:
+Integrate local project code files with Shiplens analytics SDK, register cloud product profile, and link to the user's existing Shiplens account:
 
-1. Run the project setup & initialization command:
+1. Run the integration & initialization command:
    - Windows: npx.cmd --yes @shiplens/cli init --json
    - macOS/Linux: npx --yes @shiplens/cli init --json
-   (Automatically detects framework, installs SDK dependency, injects code entry, and creates cloud project)
+   (Automatically detects framework, installs SDK dependency, injects code entry, and registers cloud product profile)
 
 2. Inspect returned `user_account_status` and credential states:
    - [Branch A: Logged in & linked] (`logged_in_linked`):
-     No extra step needed; present the project summary card containing App ID, Project Name, Injected file, and Live Dashboard URL (`dashboard_url`).
+     No extra step needed; present the product summary card containing App ID, Product Name, Injected file, and Live Dashboard URL (`dashboard_url`).
    - [Branch B: No local credentials detected] (`not_logged_in_unlinked` or `activation_required=true`):
      Prompt the user for their registered Shiplens account email, and upon reply run:
      `npx.cmd --yes @shiplens/cli auth bind --email <email> --json`
-     Instruct the user to click the Magic Link in the email to authorize and complete project binding.
-   - [Branch C: Account quota / project limit reached] (Error `QUOTA_EXCEEDED` / `PLAN_LIMIT` / unable to link):
-     Clearly notify the user that their current free/existing tier project limit or monthly event quota is full;
-     Provide upgrade instructions: recommend upgrading to Pro / Team tier (URL: https://shiplens.dev/pricing or console settings) for expanded project limits and advanced analytics;
+     Instruct the user to click the Magic Link in the email to authorize and complete product-account binding.
+   - [Branch C: Account quota / product limit reached] (Error `QUOTA_EXCEEDED` / `PLAN_LIMIT` / unable to link):
+     Clearly notify the user that their current free/existing tier product limit or monthly event quota is full;
+     Provide upgrade instructions: recommend upgrading to Pro / Team tier (URL: https://shiplens.dev/pricing or console settings) for expanded product quotas and advanced analytics;
      Note that once upgraded, re-running the bind command will activate immediately without modifying code.
 
-3. Output the final project summary and dashboard link, confirming the project is ready for analytics queries.
+3. Output the final product summary and dashboard link, confirming the product is ready for analytics queries.
 
 Please prioritize calling Shiplens CLI (Action: setup_bind_project) to execute the above requirements.
 ```
 
-#### [remove_sdk] Delete Shiplens Project Analytics Data & SDK (No Longer Needed) (Suffix: None)
+#### [remove_sdk] Remove SDK and Local Context Files & Permanently Delete Product Data (Suffix: None)
 ```text
-Delete Shiplens project analytics data and SDK integration (analytics no longer needed):
-1. Read `.shiplens.json` in the project root to get project name, app_id, and instrumented file paths.
-2. Clearly display the project name and app_id to be deleted, warn the user that historical events and hosted data will be permanently purged, and pause for explicit user confirmation ("Confirm deleting this project").
-3. Upon confirmation, remove SDK imports/instrumentation code from local frontend files, and delete `./.shiplens.json` and `.shiplens/contexts/<app_id>.md`.
-4. Run CLI command to destroy cloud project: npx.cmd --yes @shiplens/cli projects delete --app-id <app_id> --force --json.
+Remove Shiplens SDK and local context files from local project, and permanently delete the product and its analytics data from account:
+1. Read `.shiplens.json` in local project root to get product name, app_id, and instrumented file paths.
+2. Clearly display the product name and app_id to be deleted. Warn the user that this will permanently delete the product and its analytics data from their cloud account, but EMPHASIZE that local application source code will remain completely untouched. Pause for explicit user confirmation ("Confirm deleting product analytics data").
+3. Upon confirmation, remove SDK imports/instrumentation code from local frontend files, and delete `./.shiplens.json` and `.shiplens/contexts/<app_id>.md` (Remove SDK and local context files).
+4. Run CLI command to destroy cloud product: npx.cmd --yes @shiplens/cli projects delete --app-id <app_id> --force --json (Permanently delete product and analytics data from account; does not affect local code).
 
 Please prioritize calling Shiplens CLI (Action: remove_sdk) to execute the above requirements.
 ```
@@ -788,12 +788,12 @@ Please prioritize calling Shiplens CLI (Action: uninstall_cli) to execute the ab
  - macOS/Linux: npm uninstall -g @shiplens/cli
 ```
 
-#### [generate_context] Use Shiplens CLI to Generate Context Descriptions for All Pages and Buttons (Suffix: None)
+#### [generate_context] Update Local Business Context: Generate Descriptions for All Pages and Buttons (Suffix: None)
 ```text
-Use Shiplens CLI to map pages, features, and button layouts into `.shiplens/contexts/<app_id>.md` (deep business context) and `.shiplens/contexts/<app_id>.json` (deterministic UI dictionary) so AI analytics can understand the business context and exact control IDs behind each metric:
-1. Check `./.shiplens.json` for current app_id and project name.
+Update local business context: rescan local frontend pages and buttons, refresh local business descriptions in `.shiplens/contexts/<app_id>.md` and `.shiplens/contexts/<app_id>.json` so AI analytics understands the exact business context and control IDs behind each metric:
+1. Check `./.shiplens.json` for current app_id and product name.
 2. Run AST static code scan across frontend code and routes to extract page purposes, feature copy, interactive buttons, test IDs, selectors, and exact source code locations.
-3. Write structured details into `.shiplens/contexts/<app_id>.md` and `.shiplens/contexts/<app_id>.json` pair, binding app_id and project name.
+3. Write structured details into `.shiplens/contexts/<app_id>.md` and `.shiplens/contexts/<app_id>.json` pair, binding app_id and product name.
 Please prioritize calling Shiplens CLI (Action: generate_context) to execute the above requirements.
 ```
 

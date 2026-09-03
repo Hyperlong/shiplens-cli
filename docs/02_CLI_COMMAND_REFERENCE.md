@@ -17,15 +17,15 @@
 
 ---
 
-## 1. Project Onboarding (`init`)
+## 1. Integrate Local Project with Analytics (`init`)
 
 ```bash
 shiplens init [options]
 ```
 
 ### Options:
-- `--name <name>`: Project name (default: package.json name)
-- `--description <desc>`: Project description
+- `--name <name>`: Product name (default: package.json name)
+- `--description <desc>`: Product description
 - `--industry <ind>`: Industry category
 - `--genre <id>`: Level 1 Genre ID
 - `--subgenre <id>`: Level 2 Sub-genre ID
@@ -51,12 +51,12 @@ shiplens init [options]
 
 ---
 
-## 3. Projects Management (`projects`)
+## 3. Products Integrated with Analytics (`projects`)
 
 ### Subcommands:
-- `shiplens projects list`: List all projects associated with current account
-- `shiplens projects bind`: Bind current project to account
-- `shiplens projects delete [--force]`: Delete project and its data
+- `shiplens projects list`: List all products integrated with analytics in current account (view product profiles and App IDs)
+- `shiplens projects bind`: Bind current local project to an integrated product in account
+- `shiplens projects delete [--force]`: Permanently delete product and its data from account (destroys cloud analytics data only; does not affect or delete local code)
 
 ---
 
@@ -194,11 +194,11 @@ sequenceDiagram
 | Component | Responsibility |
 |-----------|---------------|
 | **CLI** (`npx @shiplens/cli`) | Onboarding, SDK injection, local config management, direct analytics queries |
-| **Cloud API** | Project registration, authentication, data aggregation, dashboard hosting |
+| **Cloud API** | Product registration, authentication, data aggregation, dashboard hosting |
 | **SDK** (`@shiplens/sdk`) | Client-side event capture (pageviews, clicks, custom events), DOM hashing |
 | **shiplens.env** | Device-level credentials (Access Secret), file permission 0600, auto-gitignored |
 | **Local MCP Proxy** (`shiplens mcp serve`) | stdio bridge for IDE/Agent integration, forwards requests with local credentials |
-| **.shiplens.json** | Project metadata cache (app_id, project_name, schema timestamp) |
+| **.shiplens.json** | Local product metadata cache (app_id, project_name, schema timestamp) |
 | **.shiplens/contexts/\<app_id\>.md** | Business context dictionary (page routes, button labels, feature descriptions) |
 | **.shiplens/learnings.md** | User preference overrides (date range, metrics, filters) |
 
