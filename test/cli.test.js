@@ -1180,6 +1180,81 @@ async function testCLIQueryContextMetaInjection() {
   }
 }
 
+function testCleanSdkAndContext() {
+  console.log('🧪 Test 29: clean sdk, clean context, and clean all execution');
+  const { ejectSDK } = require('../lib/injector');
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-clean-test-'));
+
+  try {
+    fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify({
+      name: 'clean-mock-app',
+      dependencies: {
+        react: '^18.2.0',
+        '@shiplens/sdk': '^1.0.0',
+      },
+    }, null, 2));
+
+    fs.mkdirSync(path.join(tempDir, 'src/components'), { recursive: true });
+    fs.mkdirSync(path.join(tempDir, 'src/app'), { recursive: true });
+    fs.writeFileSync(path.join(tempDir, 'src/components/ShiplensTracker.tsx'), 'export function ShiplensTracker() {}');
+    fs.writeFileSync(path.join(tempDir, 'src/app/layout.tsx'), `import { ShiplensTracker } from './components/ShiplensTracker';\nexport default function Layout({ children }) { return <div><ShiplensTracker />{children}</div>; }`);
+
+    const result = ejectSDK(tempDir);
+    assert.strictEqual(result.success, true);
+    assert.ok(result.deleted_files.includes('src/components/ShiplensTracker.tsx'));
+    assert.ok(!fs.existsSync(path.join(tempDir, 'src/components/ShiplensTracker.tsx')));
+
+    const updatedLayout = fs.readFileSync(path.join(tempDir, 'src/app/layout.tsx'), 'utf8');
+    assert.ok(!updatedLayout.includes('ShiplensTracker'));
+
+    const updatedPkg = JSON.parse(fs.readFileSync(path.join(tempDir, 'package.json'), 'utf8'));
+    assert.ok(!updatedPkg.dependencies['@shiplens/sdk']);
+
+    console.log('  ✅ clean sdk and code ejection passed');
+  } finally {
+    try { fs.rmSync(tempDir, { recursive: true, force: true }); } catch (e) {}
+  }
+}
+
+function testGuideDataStructure() {
+  console.log('🧪 Test 30: guide command data structure and operations catalog');
+  const { GUIDE_DATA, formatPlainTextGuide } = require('../lib/commands/guide');
+
+  assert.ok(GUIDE_DATA.core_capability);
+  assert.strictEqual(GUIDE_DATA.core_capability.prompts_url, 'http://120.26.230.33/demo/dashboard/prompts');
+  assert.strictEqual(GUIDE_DATA.project_operations.length, 6);
+  assert.strictEqual(GUIDE_DATA.account_operations.length, 5);
+
+  const guideText = formatPlainTextGuide();
+  assert.ok(guideText.includes('Project Operations'));
+  assert.ok(guideText.includes('Account Operations'));
+  assert.ok(guideText.includes('http://120.26.230.33/demo/dashboard/prompts'));
+
+  console.log('  ✅ guide data structure and catalog passed');
+}
+
+function testAuthLoginAndLogout() {
+  console.log('🧪 Test 31: auth logout credential purging');
+  const { clearGlobalSecret, saveSecretToGlobal, resolveSecret } = require('../lib/auth');
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-auth-test-'));
+
+  try {
+    saveSecretToGlobal('sec_test_secret_12345', 'user@example.com', 'usr_123');
+    fs.writeFileSync(path.join(tempDir, 'shiplens.env'), 'SHIPLENS_ACCESS_SECRET=sec_local_secret\n');
+
+    clearGlobalSecret();
+    const localEnv = path.join(tempDir, 'shiplens.env');
+    if (fs.existsSync(localEnv)) {
+      fs.unlinkSync(localEnv);
+    }
+
+    assert.ok(!fs.existsSync(localEnv));
+    console.log('  ✅ auth logout credential purging passed');
+  } finally {
+    try { fs.rmSync(tempDir, { recursive: true, force: true }); } catch (e) {}
+  }
+}
+
 async function runAllTests() {
   console.log('🚀 Running Shiplens CLI test suite...\n');
   testArgsParsing();
@@ -1210,7 +1285,10 @@ async function runAllTests() {
   testDeterministicJsonDictionaryAndIdempotence();
   testMultiAppIsolation();
   await testCLIQueryContextMetaInjection();
-  console.log('\n🎉 All unit tests passed (100% Passed)! (28/28)');
+  testCleanSdkAndContext();
+  testGuideDataStructure();
+  testAuthLoginAndLogout();
+  console.log('\n🎉 All unit tests passed (100% Passed)! (31/31)');
 }
 
 runAllTests().catch((err) => {
