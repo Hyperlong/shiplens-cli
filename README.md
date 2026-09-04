@@ -1,41 +1,33 @@
-# 🚀 Shiplens CLI (in develop)
+# 🚀 Shiplens CLI (Official Public Preview)
 
-> **Official Shiplens CLI (in develop) — Automated Web User Analytics & AI Agent Analysis Engine.**
+> **Official Shiplens CLI — Zero-dependency Automated Web Analytics & Telemetry Engine for Developers and AI Agents.**
 
-[![npm version](https://img.shields.io/npm/v/@shiplens/cli.svg)](https://www.npmjs.com/package/@shiplens/cli)
+[![Release](https://img.shields.io/github/v/release/Hyperlong/shiplens-cli.svg)](https://github.com/Hyperlong/shiplens-cli/releases)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Node Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen.svg)](package.json)
+[![GDPR Compliant](https://img.shields.io/badge/GDPR-Compliant-success.svg)](https://shiplens.dev)
+[![Infrastructure](https://img.shields.io/badge/Infrastructure-EU%20Cloud-blue.svg)](https://shiplens.dev)
 
 ---
 
-Shiplens CLI (in develop) is the official command-line tool for [shiplens.dev](https://shiplens.dev). It provides automated analytics instrumentation for modern web frontend applications and seamlessly pairs with AI coding agents (Cursor, Windsurf, Codex, Claude, Antigravity, etc.) for conversational data analysis and real-time dashboards.
+Shiplens CLI is the official zero-dependency command-line tool for [shiplens.dev](https://shiplens.dev). Built as a self-contained native program with zero Node.js/Python runtime prerequisites, it provides automated telemetry instrumentation for modern web frontend applications and pairs with AI coding agents (Cursor, Windsurf, Codex, Claude, Antigravity, etc.) for conversational data analysis and real-time dashboards.
 
 ---
 
-## 🌟 Key Features
+## ⚡ Quick Start (Zero Prerequisites)
 
-- **Automated Setup & Instrumentation**: Automatically detects frontend frameworks (Next.js, Vite, Vue, HTML, etc.) and injects `@shiplens/sdk` tracking code.
-- **Web User Analytics**: Real-time traffic summaries, user journeys, retention cohorts, and click heatmaps.
-- **AI Agent Intelligence**: Query and analyze product behavior data directly from AI coding assistants via CLI and local stdio MCP proxy (`shiplens mcp serve`).
-- **AI-Powered Live Dashboards**: Assemble 12-column responsive analytics dashboards from natural language prompts.
-- **Business Context & Adaptive Learning**: Automatically maps DOM hashes to real page names and remembers per-product analysis preferences.
+Install and initialize in the root directory of any local project with a single command:
 
----
-
-## ⚡ Quick Start
-
-Run the initialization command in the root directory of any local frontend project:
-
-```bash
-# General terminal
-npx --yes @shiplens/cli init
-
-# Windows PowerShell
-npx.cmd --yes @shiplens/cli init
-
-# Backup mirror fallback
-npx --yes --registry=https://registry.npmmirror.com @shiplens/cli init
+**Windows (PowerShell)**:
+```powershell
+irm https://raw.githubusercontent.com/Hyperlong/shiplens-cli/main/init.ps1 | iex
 ```
+
+**macOS / Linux**:
+```bash
+curl -fsSL https://raw.githubusercontent.com/Hyperlong/shiplens-cli/main/init.sh | bash
+```
+
+> **Note**: If you are using the Node.js / NPM workflow, you can also run `npx @shiplens/cli init`.
 
 ---
 
