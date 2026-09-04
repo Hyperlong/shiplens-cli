@@ -10,6 +10,7 @@ const { configureMcpClient, getMcpConfig } = require('../lib/mcp-config');
 const { saveDeviceEnv } = require('../lib/device-env');
 const { getContextFilePath, extractAppIdFromMarkdown } = require('../lib/commands/context');
 const { detectProject, injectSDK, installSDKDependency, isProjectCold, writeSDKToManifest, FRAMEWORKS } = require('../lib/injector');
+const { handleSkill } = require('../lib/commands/skill');
 
 function testArgsParsing() {
   console.log('🧪 Test 1: CLI arguments parsing');
@@ -1422,6 +1423,53 @@ async function testInitCloudTaxonomyErrorFallback() {
   }
 }
 
+async function testSkillInstallCommand() {
+  console.log('🧪 Test 33: skill install & status subcommands execution');
+  const tempProject = fs.mkdtempSync(path.join(os.tmpdir(), 'shiplens-skill-test-'));
+  const originalCwd = process.cwd();
+
+  try {
+    process.chdir(tempProject);
+
+    let outputStatus = null;
+    await handleSkill('status', [], { local: true }, {
+      isJSON: true,
+      output: (d) => { outputStatus = d; },
+    });
+    assert.ok(outputStatus);
+    assert.strictEqual(outputStatus.ok, true);
+    assert.strictEqual(outputStatus.targets[0].installed, false);
+
+    let outputInstall = null;
+    await handleSkill('install', [], { local: true }, {
+      isJSON: true,
+      output: (d) => { outputInstall = d; },
+    });
+    assert.ok(outputInstall);
+    assert.strictEqual(outputInstall.ok, true);
+    assert.strictEqual(outputInstall.targets[0].installed, true);
+
+    const installedSkillMd = path.join(tempProject, '.agents', 'skills', 'shiplens', 'SKILL.md');
+    assert.ok(fs.existsSync(installedSkillMd), 'SKILL.md should exist in target directory');
+    const skillContent = fs.readFileSync(installedSkillMd, 'utf8');
+    assert.ok(skillContent.includes('name: shiplens'), 'SKILL.md should include shiplens frontmatter');
+    assert.ok(skillContent.includes('Runtime Health Check'), 'SKILL.md should include health check');
+
+    const theoryMd = path.join(tempProject, '.agents', 'skills', 'shiplens', 'references', 'analytics-theory.md');
+    assert.ok(fs.existsSync(theoryMd), 'references/analytics-theory.md should exist');
+
+    const runPs1 = path.join(tempProject, '.agents', 'skills', 'shiplens', 'scripts', 'run.ps1');
+    assert.ok(fs.existsSync(runPs1), 'scripts/run.ps1 should exist');
+
+    console.log('  ✅ skill install and status passed');
+  } finally {
+    process.chdir(originalCwd);
+    try {
+      fs.rmSync(tempProject, { recursive: true, force: true });
+    } catch (e) {}
+  }
+}
+
 async function runAllTests() {
   console.log('🚀 Running Shiplens CLI test suite...\n');
   testArgsParsing();
@@ -1456,7 +1504,8 @@ async function runAllTests() {
   testGuideDataStructure();
   testAuthLoginAndLogout();
   await testProjectsUpdateCommand();
-  console.log('\n🎉 All unit tests passed (100% Passed)! (34/34)');
+  await testSkillInstallCommand();
+  console.log('\n🎉 All unit tests passed (100% Passed)! (35/35)');
 }
 
 runAllTests().catch((err) => {
