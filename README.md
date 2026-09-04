@@ -1,6 +1,6 @@
-# 🚀 Shiplens CLI
+# 🚀 Shiplens CLI (in develop)
 
-> **Official Shiplens CLI — Automated Web User Analytics & AI Agent Analysis Engine.**
+> **Official Shiplens CLI (in develop) — Automated Web User Analytics & AI Agent Analysis Engine.**
 
 [![npm version](https://img.shields.io/npm/v/@shiplens/cli.svg)](https://www.npmjs.com/package/@shiplens/cli)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
@@ -8,7 +8,7 @@
 
 ---
 
-Shiplens CLI is the official command-line tool for [shiplens.dev](https://shiplens.dev). It provides automated analytics instrumentation for modern web frontend applications and seamlessly pairs with AI coding agents (Cursor, Windsurf, Codex, Claude, Antigravity, etc.) for conversational data analysis and real-time dashboards.
+Shiplens CLI (in develop) is the official command-line tool for [shiplens.dev](https://shiplens.dev). It provides automated analytics instrumentation for modern web frontend applications and seamlessly pairs with AI coding agents (Cursor, Windsurf, Codex, Claude, Antigravity, etc.) for conversational data analysis and real-time dashboards.
 
 ---
 

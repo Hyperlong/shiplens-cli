@@ -1,7 +1,7 @@
 {
   "name": "@shiplens/cli",
-  "version": "1.7.0",
-  "description": "Shiplens CLI — Automated Web User Analytics & AI Agent Analysis Engine",
+  "version": "1.7.1",
+  "description": "Shiplens CLI (in develop) — Automated Web User Analytics & AI Agent Analysis Engine",
   "main": "lib/index.js",
   "bin": {
     "cli": "bin/shiplens.js",
