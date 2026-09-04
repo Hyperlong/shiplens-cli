@@ -1,6 +1,7 @@
-﻿node_modules/
+node_modules/
 .DS_Store
 *.log
 .shiplens/
 .shiplens.json
+bin/shiplens-*
 
