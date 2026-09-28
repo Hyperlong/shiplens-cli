@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-VERSION="v2.2.4"
+VERSION="v2.2.5"
 OWNER_REPO="Hyperlong/shiplens-cli"
 
 OS="$(uname -s)"
@@ -15,11 +15,11 @@ case "$OS" in
     case "$ARCH" in
       x86_64)
         TARGET="shiplens-darwin-amd64"
-        EXPECTED_HASH="992acf35928f898c62ace8927dc8ca50ab71671894a38f423e58cabbc34d4978"
+        EXPECTED_HASH="302593f59c21216a95e405e4a08253368f82f97aaa375b3a4f218461c87c93ca"
         ;;
       arm64)
         TARGET="shiplens-darwin-arm64"
-        EXPECTED_HASH="977d5d8500434631f3b6154af56a05881d2086fd7f3e0514a84cd90627f43936"
+        EXPECTED_HASH="ab03c905291f973284874889e49afc06cdf21ffa034fb6e8b75d3894cb589678"
         ;;
       *)
         echo "Error: Unsupported architecture $ARCH on Darwin." >&2
@@ -31,11 +31,11 @@ case "$OS" in
     case "$ARCH" in
       x86_64)
         TARGET="shiplens-linux-amd64"
-        EXPECTED_HASH="7a53e58bc51095e04b210fbddbef98b742aae12de3254ae503578347f1ab302c"
+        EXPECTED_HASH="5c1bb4f136441a21ceaa78e36955dce34caf23b22f487ddb9a6bba2f4a2f8098"
         ;;
       aarch64|arm64)
         TARGET="shiplens-linux-arm64"
-        EXPECTED_HASH="ec1d80c999a5abc0182533248d4573f698c99090863bc31b789fcb741648bfa5"
+        EXPECTED_HASH="5c28e8777d43d7bbe0b20de4f6e3c92657b1a512d0288172f4e72732f429b5a1"
         ;;
       *)
         echo "Error: Unsupported architecture $ARCH on Linux." >&2
