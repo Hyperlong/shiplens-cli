@@ -5,7 +5,7 @@ $ErrorActionPreference = "Stop"
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$Version = "v2.2.6"
+$Version = "v2.2.7"
 $OwnerRepo = "Hyperlong/shiplens-cli"
 
 # Detect architecture
@@ -16,11 +16,11 @@ if (-not $Is64Bit) {
 }
 
 $Arch = "windows-amd64"
-$ExpectedHash = "24f8f6fd23731e9e5e752528393e1e03898c7339cd3c046ae94e205d29ca04f0"
+$ExpectedHash = "5488e1bb75a8aab6a3b807052cf424b6b5e1285523ddb995ab2d462eb7cb3596"
 
 if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") {
     $Arch = "windows-arm64"
-    $ExpectedHash = "1ab21baef4f8b7d58be937d272d09f507612314122d32a3b2f6f2d2c05669ee3"
+    $ExpectedHash = "715682df3386358f8f448d17ed303880f4d136fe76fe22ec1a156a4ade279c9b"
 }
 
 $InstallDir = Join-Path $env:LOCALAPPDATA "Shiplens\bin"
