@@ -1,11 +1,11 @@
-# Shiplens CLI — Automated Installer & Initializer (Windows)
+# Shiplens CLI 鈥?Automated Installer & Initializer (Windows)
 # Copyright (c) 2026 Shiplens Team. Licensed under Apache-2.0.
 
 $ErrorActionPreference = "Stop"
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$Version = "v2.3.0"
+$Version = "v2.3.1"
 $OwnerRepo = "Hyperlong/shiplens-cli"
 
 # Detect architecture
@@ -16,11 +16,11 @@ if (-not $Is64Bit) {
 }
 
 $Arch = "windows-amd64"
-$ExpectedHash = "62f78ebf437906ba4c9ce48cfbbbb0c235d6135dec5f590c7a226590edc55792"
+$ExpectedHash = "15604fe790ac33817dcaecce081b740882ded490aa6ae66a0b20a89c13b5a81c"
 
 if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") {
     $Arch = "windows-arm64"
-    $ExpectedHash = "dd489831c49487635cbee05f19e70b2a5dacd700b65ad01c129092a5dc679cac"
+    $ExpectedHash = "6f8482489047c3e4da4ac9db8a5fa0155660f6f034cb4d9e37a9dafe5b9a0700"
 }
 
 $InstallDir = Join-Path $env:LOCALAPPDATA "Shiplens\bin"
@@ -77,5 +77,5 @@ try {
     }
 } catch {}
 
-# Execute initialization in the current working project directory
-& "$BinaryPath" init --json @args
+# Launch developer manual in the browser
+& "$BinaryPath" manual @args

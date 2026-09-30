@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Shiplens CLI — Automated Installer & Initializer (macOS & Linux)
+# Shiplens CLI 鈥?Automated Installer & Initializer (macOS & Linux)
 # Copyright (c) 2026 Shiplens Team. Licensed under Apache-2.0.
 
 set -euo pipefail
 
-VERSION="v2.3.0"
+VERSION="v2.3.1"
 OWNER_REPO="Hyperlong/shiplens-cli"
 
 OS="$(uname -s)"
@@ -15,11 +15,11 @@ case "$OS" in
     case "$ARCH" in
       x86_64)
         TARGET="shiplens-darwin-amd64"
-        EXPECTED_HASH="bd242939d6946b93236011e91046b8caf98dad9fcde99075d15a18caca726ad8"
+        EXPECTED_HASH="845de4914535efb17a6270d240d9df9d45395ebc7c8d3ce74850304749f89ccf"
         ;;
       arm64)
         TARGET="shiplens-darwin-arm64"
-        EXPECTED_HASH="75cbb1bc0b7f9f895160efcb5128077c8b707bc73c040dbea1d204048324589b"
+        EXPECTED_HASH="be48def07ecb82e6a3a2061d17247c21b045cb56231903885b3b997c9a2a809c"
         ;;
       *)
         echo "Error: Unsupported architecture $ARCH on Darwin." >&2
@@ -31,11 +31,11 @@ case "$OS" in
     case "$ARCH" in
       x86_64)
         TARGET="shiplens-linux-amd64"
-        EXPECTED_HASH="05b307e39aa8024c68205ec660fb51decc230e65077156990cd0f21ef6cd07e3"
+        EXPECTED_HASH="91f4983357f8b3b6f0b95c8fec9a165365daecc21081236ae28e569de713e08d"
         ;;
       aarch64|arm64)
         TARGET="shiplens-linux-arm64"
-        EXPECTED_HASH="a015ea26d883bb81070688256c59cdf6a1742776a3acffc6f2db9611fd33943b"
+        EXPECTED_HASH="5b14a9c3dce2043a91b246afe2fee6a5813ad16445848d247f19e128e548ff9d"
         ;;
       *)
         echo "Error: Unsupported architecture $ARCH on Linux." >&2
@@ -95,5 +95,5 @@ if [ "$NEED_DOWNLOAD" -eq 1 ]; then
   echo "[Shiplens] Installed successfully to $BINARY_PATH"
 fi
 
-# Execute initialization in project directory
-"$BINARY_PATH" init --json "$@"
+# Launch developer manual in the browser
+"$BINARY_PATH" manual "$@"
